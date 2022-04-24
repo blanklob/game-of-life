@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
-import Dashboard from './components/Dashboard';
+import React from 'react';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Canvas from './components/Canvas';
 import './index.css';
-import Footer from './components/Footer';
 
 export default function App() {
-  const [count, setCount] = useState(0);
-
   return (
     <div>
       <Header />

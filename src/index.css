@@ -148,7 +148,8 @@ nav > ul {
 main,
 canvas {
   outline: none;
-  min-block-size: 100vh;
+  block-size: 100vh;
+  overflow: hidden;
 }
 
 canvas {
