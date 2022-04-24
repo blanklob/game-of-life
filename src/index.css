@@ -187,6 +187,13 @@ canvas {
   padding-block-start: 0;
 }
 
+.dashboard li {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  row-gap: 0.5rem;
+}
+
 .dashboard h3 {
   cursor: pointer;
   margin: 0;

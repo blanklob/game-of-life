@@ -60,3 +60,15 @@ export function removeArrayDuplicates(array: Array<any>) {
     return firstItemPosition === index;
   });
 }
+
+export const isTouchDevice = () => {
+  /**
+   * @description Check if the device is a touch device.
+   *
+   * @return {boolean} - True or false
+   */
+  return (
+    'ontouchstart' in window || // works on most browsers
+    'onmsgesturechange' in window // works on ie10
+  );
+};

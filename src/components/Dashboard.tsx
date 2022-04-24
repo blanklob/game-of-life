@@ -1,20 +1,27 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useElementSize } from '@mantine/hooks';
+import { isTouchDevice } from '../utils';
 
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
   const { ref, width, height } = useElementSize();
+  const touchDevice = isTouchDevice();
+
+  let [dashboardWidth, dashboardHeight] = [300, 270];
+
+  if (touchDevice)
+    [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 270];
 
   const variants = {
-    opened: { width: 300, height: 300 },
+    opened: { width: dashboardWidth, height: dashboardHeight },
     closed: { width: width + 15, height: height + 10 },
   };
 
   return (
     <motion.aside
       className="dashboard"
-      drag
+      drag={!touchDevice}
       variants={variants}
       initial={false}
       animate={isOpen ? 'opened' : 'closed'}
