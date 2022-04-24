@@ -18,7 +18,6 @@ export default function Dashboard() {
       variants={variants}
       initial={false}
       animate={isOpen ? 'opened' : 'closed'}
-      transition={{ type: 'spring', duration: 0.3 }}
       dragConstraints={{
         top: 0,
         left: -window.innerWidth / 2 + 320,

@@ -1,5 +1,6 @@
 import React from 'react';
 import Dashboard from './Dashboard';
+import ExternalLink from './ExternalLink';
 
 export default function Header() {
   return (
@@ -7,7 +8,10 @@ export default function Header() {
       <nav role={'navigation'}>
         <ul role={'list'}>
           <li className="logo">
-            <p>Game Of Life</p>
+            <a href="/">Game Of Life</a>
+            <ExternalLink link="https://github.com/JulienFRANCOIS-Hetic/game_of_life">
+              Source Code
+            </ExternalLink>
           </li>
           <li>
             <Dashboard />

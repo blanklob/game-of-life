@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
 export default function Canvas() {
-  return <canvas></canvas>;
+  const ref = useRef(null);
+
+  return (
+    <>
+      <canvas ref={ref} id="GameCanvas"></canvas>
+    </>
+  );
 }

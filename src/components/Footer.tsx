@@ -1,4 +1,5 @@
-import React, { Children } from 'react';
+import React from 'react';
+import ExternalLink from './ExternalLink';
 
 export default function Footer() {
   return (
@@ -19,18 +20,5 @@ export default function Footer() {
         </li>
       </ul>
     </footer>
-  );
-}
-
-interface ExternalLinkPropos {
-  link?: string;
-  children: React.ReactNode;
-}
-
-export function ExternalLink({ link, children }: ExternalLinkPropos) {
-  return (
-    <a href={link || '#'} target={'_blank'} rel="noreferrer noopener">
-      {children}
-    </a>
   );
 }
