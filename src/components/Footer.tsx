@@ -7,10 +7,14 @@ export default function Footer() {
       <ul role="list">
         <li>By</li>
         <li>
-          <ExternalLink>Youness</ExternalLink>
+          <ExternalLink link="https://github.com/idbakkasse">
+            Youness
+          </ExternalLink>
         </li>
         <li>
-          <ExternalLink>Julien</ExternalLink>
+          <ExternalLink link="https://github.com/JulienFRANCOIS-Hetic">
+            Julien
+          </ExternalLink>
         </li>
         <li>
           <ExternalLink>Alexandre</ExternalLink>
