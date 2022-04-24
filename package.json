@@ -13,10 +13,12 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "test": "jest --watch --silent false --config --coverage jest.config.json",
+    "test": "jest --watch --silent false --config --coverage jest.config.ts",
     "format": "prettier --write \"src/**/*.ts\""
   },
   "dependencies": {
+    "@mantine/hooks": "^4.1.5",
+    "framer-motion": "^6.3.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
