@@ -9,8 +9,8 @@ export default function Header() {
         <ul role={'list'}>
           <li className="logo">
             <a href="/">Game Of Life</a>
-            <ExternalLink link="https://github.com/JulienFRANCOIS-Hetic/game_of_life">
-              Source Code
+            <ExternalLink link="https://github.com/idbakkasse/game-of-life">
+              ./Source Code
             </ExternalLink>
           </li>
           <li>

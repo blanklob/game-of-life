@@ -214,3 +214,17 @@ footer ul {
   text-transform: uppercase;
   flex-wrap: wrap;
 }
+
+footer p,
+footer li,
+.logo {
+  color: hsl(0, 0%, 0%);
+  background-color: hsl(0, 0%, 94%);
+  padding: 0 0.5rem;
+}
+
+footer p::selection,
+footer li::selection {
+  color: hsl(0, 0%, 0%);
+  background-color: hsl(0, 0%, 94%);
+}
