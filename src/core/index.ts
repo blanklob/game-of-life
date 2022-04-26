@@ -21,12 +21,13 @@ import {
 export type CellType = Array<number>;
 export type aliveCellsArrayType = Array<CellType>;
 
-const dimensions: [number, number] = [1000, 1000];
-// Generation Zero random cell deployment
-let livingCellsGeneration = createLife();
+// const dimensions: [number, number] = [1000, 1000];
+// // Generation Zero random cell deployment
+// let livingCellsGeneration = createLife();
 
 export function createLife(
-  numOfInitialCells: number = 100,
+  dimensions: [number, number] = [1000, 1000],
+  numOfInitialCells: number = 1000,
 ): aliveCellsArrayType {
   /**
    * @description Creates the first cells (generation zero) in the grid randomly
@@ -36,7 +37,6 @@ export function createLife(
    */
 
   const [columns, rows] = dimensions;
-
   let livingCellsCoords: aliveCellsArrayType = new Array();
 
   // Limit the number of initial cells to grid cells if it's surpasses the grid limit.
@@ -59,7 +59,11 @@ export function createLife(
   return removeArrayDuplicates(livingCellsCoords);
 }
 
-export function countCellNeighbours(cellCoords: [number, number]): number {
+export function countCellNeighbours(
+  dimensions: [number, number] = [1000, 1000],
+  cellCoords: [number, number],
+  livingCellsGeneration: aliveCellsArrayType,
+): number {
   /**
    * @description Checks how many neighbors a cell has
    * and sends back an array of all cells coordonnants.
@@ -97,7 +101,10 @@ export function countCellNeighbours(cellCoords: [number, number]): number {
   return numOfNeighbourCells;
 }
 
-export function createGeneration() {
+export function createGeneration(
+  dimensions: [number, number] = [1000, 1000],
+  livingCellsGeneration: aliveCellsArrayType,
+) {
   /**
    * @description Checks how many neighbors a cell has and returns
    *
@@ -114,7 +121,11 @@ export function createGeneration() {
         currentCell,
       );
 
-      const currentCellNeighboursCount = countCellNeighbours(currentCell);
+      const currentCellNeighboursCount = countCellNeighbours(
+        dimensions,
+        currentCell,
+        livingCellsGeneration,
+      );
 
       // Checking game of lifes rules.
       if (
@@ -136,20 +147,4 @@ export function createGeneration() {
       }
     }
   }
-}
-
-// testing
-function runGame(numOfGeneration: number = 100) {
-  while (numOfGeneration > 0 && livingCellsGeneration.length > 0) {
-    createGeneration();
-    console.log(livingCellsGeneration.length);
-    numOfGeneration--;
-    // console.log(numOfGeneration);
-  }
-
-  return endGame();
-}
-
-function endGame() {
-  return console.log('All cells are dead...');
 }

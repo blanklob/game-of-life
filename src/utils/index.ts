@@ -72,3 +72,13 @@ export const isTouchDevice = () => {
     'onmsgesturechange' in window // works on ie10
   );
 };
+
+export const getRandomInt = (max: number) => {
+  /**
+   * @description Return a random positive integer.
+   *
+   * @param {number} - max - the maximum number to return
+   * @return {number} - True or false
+   */
+  return Math.floor(Math.random() * max);
+};

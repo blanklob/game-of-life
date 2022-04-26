@@ -1,50 +1,41 @@
 import React from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
+import { createLife } from '../core';
 
-const getRandomInt = (max: number) => {
-  return Math.floor(Math.random() * max);
-};
+const Canvas: React.FC = () => {
+  const dimensions: [number, number] = [window.innerWidth, window.innerHeight];
+  const cellSize = 10;
+  const livingCells = createLife([
+    window.innerWidth / cellSize,
+    window.innerHeight / cellSize,
+  ]);
 
-export default function Canvas() {
-  const sphere = (p5: p5Types, x: number, y: number, a: number, b: number) => {
-    let c = p5.color(getRandomInt(255), getRandomInt(255), getRandomInt(255));
-    p5.fill(c);
+  const cell = (p5: p5Types, x: number, y: number): void => {
+    const color = p5.color(240);
+    p5.fill(color);
+    p5.rect(x, y, cellSize, cellSize);
     p5.noStroke();
-    p5.ellipse(x, y, a, b);
   };
 
-  const setup = (p5: p5Types, canvasParentRef: Element) => {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
-    let bound = 0;
-
-    if (width > height) {
-      bound = width;
-    } else {
-      bound = height;
-    }
-
+  const setup = (p5: p5Types, canvasParentRef: Element): void => {
+    const [width, height] = dimensions;
     p5.createCanvas(width, height).parent(canvasParentRef);
-    console.log('createCanvas called');
-    p5.background('white');
-
-    for (let i = 0; i < 500; i++) {
-      const randomSize = getRandomInt(500);
-      sphere(
-        p5,
-        getRandomInt(bound),
-        getRandomInt(bound),
-        randomSize,
-        randomSize,
-      );
-    }
+    p5.background(0);
   };
 
-  const draw = (p5: p5Types) => {
-    // console.log('draw');
+  const draw = (p5: p5Types): void => {
+    p5.background(0);
+
+    for (let i = 0; i < livingCells.length; i++) {
+      const livingCellsX = livingCells[i][0] * cellSize;
+      const livingCellsY = livingCells[i][1] * cellSize;
+
+      cell(p5, livingCellsX, livingCellsY);
+    }
   };
 
   return <Sketch setup={setup} draw={draw} />;
-}
+};
+
+export default Canvas;
