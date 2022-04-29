@@ -78,19 +78,35 @@ export const getRandomInt = (max: number) => {
    * @description Return a random positive integer.
    *
    * @param {number} - max - the maximum number to return
-   * @return {number} - True or false
+   * @return {number} - The random number
    */
   return Math.floor(Math.random() * max);
 };
 
-export const generateRandomColors = () => {
+export const generateRandomColors = (threshold: number) => {
   /**
-   * @description Return a random positive integer.
+   * @description Return a random color combination.
    *
-   * @return {number} - True or false
+   * @param {number} threshold - The diffrence between the background and foreground colors.
+   * @return {object} - An object containing the randomly generated color combination.
    */
-  const foreground = [getRandomInt(255)];
-  const background = getRandomInt(20);
+  const randomColorComibination = (max: number) => {
+    return [getRandomInt(max), getRandomInt(max), getRandomInt(max)];
+  };
+
+  if (threshold - 255 >= 0 || 255 - threshold <= 10) threshold = 240;
+
+  let foreground = randomColorComibination(255);
+  let background = randomColorComibination(255 - threshold);
+
+  while (
+    Math.abs(foreground[0] - background[0]) < threshold ||
+    Math.abs(foreground[1] - background[1]) < threshold ||
+    Math.abs(foreground[2] - background[2]) < threshold
+  ) {
+    foreground = randomColorComibination(255);
+    background = randomColorComibination(255 - threshold);
+  }
 
   return {
     foreground,

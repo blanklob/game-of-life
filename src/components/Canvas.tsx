@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { createLife, createGeneration } from '../core';
@@ -6,15 +6,15 @@ import { generateRandomColors } from '../utils';
 
 const Canvas: React.FC = () => {
   const dimensions: [number, number] = [window.innerWidth, window.innerHeight];
-  const cellSize = 50;
+  const cellSize = 60;
+  const colortThreshold = 100;
   const numOfInitialCells = 100;
   const frameRates = 60;
   const showGridLines = true;
   const columns = Math.ceil(window.innerWidth / cellSize);
   const rows = Math.ceil(window.innerHeight / cellSize);
-  const colors = generateRandomColors();
+  let colors = generateRandomColors(colortThreshold);
   let livingCells = createLife([columns, rows], numOfInitialCells);
-  console.log(colors);
 
   const cell = (p5: p5Types, x: number, y: number): void => {
     p5.fill(colors.foreground);
@@ -57,7 +57,12 @@ const Canvas: React.FC = () => {
     // console.log(livingCells.length);
   };
 
-  return <Sketch setup={setup} draw={draw} />;
+  const mouseClicked = (p5: p5Types, event: PointerEvent): void => {
+    if (event.target === document.getElementById('defaultCanvas0'))
+      colors = generateRandomColors(colortThreshold);
+  };
+
+  return <Sketch setup={setup} draw={draw} mouseClicked={mouseClicked} />;
 };
 
 export default Canvas;

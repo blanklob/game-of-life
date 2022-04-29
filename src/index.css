@@ -155,6 +155,7 @@ canvas {
 canvas {
   min-block-size: 100%;
   width: 100vw;
+  cursor: pointer;
 }
 
 .dashboard {
