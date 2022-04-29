@@ -228,3 +228,14 @@ footer li::selection {
   color: hsl(0, 0%, 0%);
   background-color: hsl(0, 0%, 94%);
 }
+
+.window {
+  position: absolute;
+  inset: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  inline-size: 30rem;
+  block-size: 30rem;
+  background-color: azure;
+  cursor: grab;
+}

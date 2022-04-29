@@ -26,8 +26,8 @@ export type aliveCellsArrayType = Array<CellType>;
 // let livingCellsGeneration = createLife();
 
 export function createLife(
-  dimensions: [number, number] = [1000, 1000],
-  numOfInitialCells: number = 1000,
+  dimensions: [number, number],
+  numOfInitialCells: number,
 ): aliveCellsArrayType {
   /**
    * @description Creates the first cells (generation zero) in the grid randomly
@@ -60,7 +60,7 @@ export function createLife(
 }
 
 export function countCellNeighbours(
-  dimensions: [number, number] = [1000, 1000],
+  dimensions: [number, number],
   cellCoords: [number, number],
   livingCellsGeneration: aliveCellsArrayType,
 ): number {
@@ -102,9 +102,9 @@ export function countCellNeighbours(
 }
 
 export function createGeneration(
-  dimensions: [number, number] = [1000, 1000],
+  dimensions: [number, number],
   livingCellsGeneration: aliveCellsArrayType,
-) {
+): aliveCellsArrayType {
   /**
    * @description Checks how many neighbors a cell has and returns
    *
@@ -116,6 +116,7 @@ export function createGeneration(
   for (let i = 0; i < columns; i++) {
     for (let j = 0; j < rows; j++) {
       const currentCell: [number, number] = [i, j];
+      // Todo array includes utiles has a problem
       const currentCellIsAlive = arrayIncludes(
         livingCellsGeneration,
         currentCell,
@@ -147,4 +148,6 @@ export function createGeneration(
       }
     }
   }
+
+  return livingCellsGeneration;
 }

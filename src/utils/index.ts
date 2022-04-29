@@ -82,3 +82,18 @@ export const getRandomInt = (max: number) => {
    */
   return Math.floor(Math.random() * max);
 };
+
+export const generateRandomColors = () => {
+  /**
+   * @description Return a random positive integer.
+   *
+   * @return {number} - True or false
+   */
+  const foreground = [getRandomInt(255)];
+  const background = getRandomInt(20);
+
+  return {
+    foreground,
+    background,
+  };
+};

@@ -2,6 +2,7 @@ import React from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Canvas from './components/Canvas';
+import Window from './components/Window';
 import './index.css';
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
     <div>
       <Header />
       <main id="MainContent" tabIndex={-1} role="main">
+        <Window />
         <Canvas />
       </main>
       <Footer />
