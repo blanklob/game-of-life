@@ -57,7 +57,7 @@ const Canvas: React.FC = () => {
     // console.log(livingCells.length);
   };
 
-  const mouseClicked = (p5: p5Types, event: PointerEvent): void => {
+  const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
     if (event.target === document.getElementById('defaultCanvas0'))
       colors = generateRandomColors(colortThreshold);
   };
