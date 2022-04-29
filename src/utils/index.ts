@@ -29,8 +29,8 @@ export function arrayIncludes(
    */
   return (
     // parentArray.find(childArray => childArray.length < parentArray.length);
-    // JSON.stringify(parentArray) == JSON.stringify(childArray)
-    parentArray.some((item) => equalsArray(item, childArray))
+    JSON.stringify(parentArray) == JSON.stringify(childArray)
+    // parentArray.some((item) => equalsArray(item, childArray))
   );
 }
 
