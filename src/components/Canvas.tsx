@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
-import { createLife, createGeneration } from '../core';
+import { Generation } from '../core';
 import { generateRandomColors } from '../utils';
 
 const cellSize = 60;
@@ -19,7 +19,7 @@ let dimensions = {
 let columns = Math.ceil(dimensions.width / cellSize);
 let rows = Math.ceil(dimensions.height / cellSize);
 let colors = generateRandomColors(colortThreshold);
-let livingCells = createLife([columns, rows], numOfInitialCells);
+const generation = new Generation(columns, rows, numOfInitialCells);
 
 const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
@@ -65,18 +65,22 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const drawCells = (p5: p5Types): void => {
-    for (let i = 0; i < livingCells.length; i++) {
-      const livingCellsX = livingCells[i][0] * cellSize;
-      const livingCellsY = livingCells[i][1] * cellSize;
-      cell(p5, livingCellsX, livingCellsY);
+  const drawGeneration = (p5: p5Types): void => {
+    for (const cellID in generation.livingCells) {
+      const currentCell = generation.livingCells[cellID];
+      cell(
+        p5,
+        currentCell.positionX * cellSize,
+        currentCell.positionY * cellSize,
+      );
     }
   };
 
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
-    if (showCells) drawCells(p5);
+    if (showCells) drawGeneration(p5);
+    // if (showCells) drawCells(p5);
     if (showGridLines) drawGridLines(p5);
     if (showBenchmark) benchmark(p5);
   };

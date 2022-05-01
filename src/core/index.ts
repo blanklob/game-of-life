@@ -12,95 +12,7 @@
  *
  */
 
-import {
-  arrayIncludes,
-  removeItemFromArray,
-  removeArrayDuplicates,
-  getRandomInt,
-} from '../utils';
-
-export type CellType = Array<number>;
-export type aliveCellsArrayType = Array<CellType>;
-
-// const dimensions: [number, number] = [1000, 1000];
-// // Generation Zero random cell deployment
-// let livingCellsGeneration = createLife();
-
-export function createLife(
-  dimensions: [number, number],
-  numOfInitialCells: number,
-): aliveCellsArrayType {
-  /**
-   * @description Creates the first cells (generation zero) in the grid randomly
-   * and sends back an array of living cells coordonnants.
-   *
-   * @param {number} numOfInitialCells - The number of initials cells in the grid.
-   */
-
-  const [columns, rows] = dimensions;
-  let livingCellsCoords: aliveCellsArrayType = new Array();
-
-  // Limit the number of initial cells to grid cells if it's surpasses the grid limit.
-  if (numOfInitialCells > columns * rows) numOfInitialCells = columns * rows;
-
-  while (numOfInitialCells > 0) {
-    const cellCoordX = Math.floor(Math.random() * columns);
-    const cellCoordY = Math.floor(Math.random() * rows);
-    const cellAlreadyExist = arrayIncludes(livingCellsCoords, [
-      cellCoordX,
-      cellCoordY,
-    ]);
-
-    if (!cellAlreadyExist) {
-      livingCellsCoords.push([cellCoordX, cellCoordY]);
-      numOfInitialCells--;
-    }
-  }
-
-  return removeArrayDuplicates(livingCellsCoords);
-}
-
-export function countCellNeighbours(
-  dimensions: [number, number],
-  cellCoords: [number, number],
-  livingCellsGeneration: aliveCellsArrayType,
-): number {
-  /**
-   * @description Checks how many neighbors a cell has
-   * and sends back an array of all cells coordonnants.
-   *
-   * @param {array} cellCoords - The coordinantes of the cell to check.
-   * @return {number} - Number of living neighbour cells.
-   */
-
-  const [x, y] = cellCoords;
-  const [columns, rows] = dimensions;
-
-  let numOfNeighbourCells = 0;
-
-  for (let i = -1; i <= 1; i++) {
-    for (let j = -1; j <= 1; j++) {
-      if (i === 0 && j === 0) continue;
-
-      const neighbourCellCoords = [
-        (x + i + columns) % columns,
-        (y + j + rows) % rows,
-      ];
-
-      const neighbourCellIsAlive = arrayIncludes(
-        livingCellsGeneration,
-        neighbourCellCoords,
-      );
-
-      if (neighbourCellIsAlive) numOfNeighbourCells += 1;
-    }
-  }
-
-  // TODO: Check uniquement pour les cellules mortes qui sont
-  // autour des cellules vivantes et pas pour tout les cellules mortes
-  // dans la grille.
-  return numOfNeighbourCells;
-}
+import { arrayIncludes, removeItemFromArray, getRandomInt } from '../utils';
 
 export function createGeneration(
   dimensions: [number, number],
@@ -191,6 +103,7 @@ export class Cell implements CellsType {
      * @param {array} livingCells - The coordinantes of the cell to check.
      * @return {number} - Number of living neighbour cells.
      */
+
     let numOfAliveNeighbourCells = 0;
 
     for (let i = -1; i <= 1; i++) {
@@ -218,13 +131,13 @@ export class Cell implements CellsType {
 export interface GenerationType {
   columns: number;
   rows: number;
-  livingCellsCoords: livingCellsType;
+  livingCells: livingCellsType;
   numOfInitialCells: number;
   maxNumOfCells: number;
 }
 
 export class Generation implements GenerationType {
-  livingCellsCoords: livingCellsType;
+  livingCells: livingCellsType;
   columns: number;
   rows: number;
   numOfInitialCells: number;
@@ -237,7 +150,7 @@ export class Generation implements GenerationType {
      * @param {number} numOfInitialCells - The number of initials cells in the grid.
      */
 
-    this.livingCellsCoords = {};
+    this.livingCells = {};
     this.numOfInitialCells = numOfInitialCells;
     this.columns = columns;
     this.rows = rows;
@@ -251,12 +164,14 @@ export class Generation implements GenerationType {
       const cell = new Cell(this.columns, this.rows);
       const cellID = `${cell.positionX}${cell.positionY}`;
 
-      const isCellAlreadyExist = this.livingCellsCoords[cellID] !== undefined;
+      const isCellAlreadyExist = this.livingCells[cellID] !== undefined;
 
       if (!isCellAlreadyExist) {
-        this.livingCellsCoords[cellID] = cell;
+        this.livingCells[cellID] = cell;
         this.numOfInitialCells--;
       }
     }
   }
+
+  run(): void {}
 }
