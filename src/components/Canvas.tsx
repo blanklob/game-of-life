@@ -9,6 +9,7 @@ const colortThreshold = 100;
 const numOfInitialCells = 100;
 const frameRates = 60;
 const showGridLines = true;
+const enableRandomColorGeneration = true;
 let dimensions = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -19,6 +20,8 @@ let colors = generateRandomColors(colortThreshold);
 let livingCells = createLife([columns, rows], numOfInitialCells);
 
 const Canvas: React.FC = () => {
+  let counterElement: p5Types.Element;
+
   const cell = (p5: p5Types, x: number, y: number): void => {
     p5.fill(colors.foreground);
     p5.rect(x, y, cellSize, cellSize);
@@ -30,6 +33,8 @@ const Canvas: React.FC = () => {
     p5.createCanvas(width, height).parent(canvasParentRef);
     p5.background(colors.background);
     p5.frameRate(frameRates);
+    counterElement = p5.createSpan();
+    counterElement.addClass('counter');
   };
 
   const drawGridLines = (p5: p5Types): void => {
@@ -58,10 +63,14 @@ const Canvas: React.FC = () => {
     // Issue in this function
     // createGeneration([dimensions.width, dimensions.height], livingCells);
     // console.log(livingCells.length);
+    counterElement.html(`${Math.floor(p5.frameRate())} Fps`);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
-    if (event.target === document.getElementById('defaultCanvas0'))
+    if (
+      event.target === document.getElementById('defaultCanvas0') &&
+      enableRandomColorGeneration
+    )
       colors = generateRandomColors(colortThreshold);
   };
 
