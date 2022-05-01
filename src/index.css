@@ -219,7 +219,8 @@ footer ul {
 footer p,
 footer li,
 .logo,
-.counter {
+.counter,
+.time {
   color: hsl(0, 0%, 0%);
   background-color: hsl(0, 0%, 90%);
   padding: 0 0.5rem;
@@ -227,16 +228,21 @@ footer li,
 
 footer p::selection,
 footer li::selection,
-.counter::selection {
+.counter::selection .time::selection {
   background-color: hsl(0, 0%, 0%);
   color: hsl(0, 0%, 90%);
 }
 
-.counter {
+.counter,
+.time {
   position: absolute;
   inset-block-start: 8rem;
   inset-inline-start: 2rem;
   text-transform: uppercase;
+}
+
+.time {
+  inset-block-start: 11rem;
 }
 
 .window {

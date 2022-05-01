@@ -9,6 +9,8 @@ const colortThreshold = 100;
 const numOfInitialCells = 100;
 const frameRates = 60;
 const showGridLines = true;
+const showCells = true;
+const showBenchmark = true;
 const enableRandomColorGeneration = true;
 let dimensions = {
   width: window.innerWidth,
@@ -21,6 +23,7 @@ let livingCells = createLife([columns, rows], numOfInitialCells);
 
 const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
+  let timeElement: p5Types.Element;
 
   const cell = (p5: p5Types, x: number, y: number): void => {
     p5.fill(colors.foreground);
@@ -28,13 +31,25 @@ const Canvas: React.FC = () => {
     p5.noStroke();
   };
 
+  const benchmark = (p5: p5Types): void => {
+    const currentFrameRates = Math.floor(p5.frameRate());
+    const currentTime = Math.ceil(p5.frameCount / 60);
+    counterElement.html(`${currentFrameRates} Fps`);
+    timeElement.html(`${currentTime} Seconds`);
+  };
+
   const setup = (p5: p5Types, canvasParentRef: Element): void => {
     const { width, height } = dimensions;
     p5.createCanvas(width, height).parent(canvasParentRef);
     p5.background(colors.background);
     p5.frameRate(frameRates);
-    counterElement = p5.createSpan();
-    counterElement.addClass('counter');
+
+    if (showBenchmark) {
+      counterElement = p5.createSpan();
+      timeElement = p5.createSpan();
+      counterElement.addClass('counter');
+      timeElement.addClass('time');
+    }
   };
 
   const drawGridLines = (p5: p5Types): void => {
@@ -50,20 +65,20 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const draw = (p5: p5Types): void => {
-    p5.background(colors.background);
+  const drawCells = (p5: p5Types): void => {
     for (let i = 0; i < livingCells.length; i++) {
       const livingCellsX = livingCells[i][0] * cellSize;
       const livingCellsY = livingCells[i][1] * cellSize;
       cell(p5, livingCellsX, livingCellsY);
     }
+  };
 
+  const draw = (p5: p5Types): void => {
+    p5.background(colors.background);
+
+    if (showCells) drawCells(p5);
     if (showGridLines) drawGridLines(p5);
-
-    // Issue in this function
-    // createGeneration([dimensions.width, dimensions.height], livingCells);
-    // console.log(livingCells.length);
-    counterElement.html(`${Math.floor(p5.frameRate())} Fps`);
+    if (showBenchmark) benchmark(p5);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
