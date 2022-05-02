@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useElementSize } from '@mantine/hooks';
+import { Switch } from '@mantine/core';
 import { isTouchDevice } from '../utils';
 
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
+  const [checked, setChecked] = useState(true);
   const { ref, width, height } = useElementSize();
   const touchDevice = isTouchDevice();
 
-  let [dashboardWidth, dashboardHeight] = [300, 270];
+  let [dashboardWidth, dashboardHeight] = [300, 350];
 
   if (touchDevice)
     [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 270];
@@ -54,8 +56,26 @@ export default function Dashboard() {
           />
         </li>
         <li>
-          <button role="button">Pause</button>
-          <button role="button">Restart</button>
+          <label>Show Stuff</label>
+          <div className="swicthes">
+            <Switch
+              size="xs"
+              radius="xs"
+              color="gray"
+              checked={checked}
+              onChange={(event) => setChecked(event.currentTarget.checked)}
+            />
+            <Switch size="xs" radius="xs" color="gray" />
+            <Switch size="xs" radius="xs" color="gray" />
+          </div>
+        </li>
+        <li>
+          <button role="button" id="pause">
+            Pause
+          </button>
+          <button role="button" id="restart">
+            Restart
+          </button>
         </li>
       </ul>
     </motion.aside>

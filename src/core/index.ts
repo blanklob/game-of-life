@@ -60,9 +60,9 @@ export class Cell {
           positionY: (this.positionY + j + this.rows) % this.rows,
         };
 
-        const cellID = `${neighbourCell.positionX}${neighbourCell.positionY}`;
+        const neighbourCellID = `${neighbourCell.positionX}${neighbourCell.positionY}`;
 
-        const isNeighbourCellAlive = livingCells[cellID] !== undefined;
+        const isNeighbourCellAlive = livingCells[neighbourCellID] !== undefined;
 
         if (isNeighbourCellAlive) numOfAliveNeighbourCells++;
       }
@@ -117,35 +117,77 @@ export class Generation implements GenerationType {
     }
   }
 
-  create(): void {
+  new(): void {
     for (let i = 0; i < this.columns; i++) {
       for (let j = 0; j < this.rows; j++) {
         const currentCellID = `${i}${j}`;
         const isCurrentCellAlive =
           this.livingCells[currentCellID] !== undefined;
 
-        // TODO: Check for dead cells
-        if (isCurrentCellAlive) {
-          const cell = this.livingCells[currentCellID];
-          const currentCellNeighboursCount = cell.countNeighbours(
-            this.livingCells,
-          );
+        // TODO: Check for dead cells (Make countNeighbours global)
+        // const currentCellNeighboursCount = cell.countNeighbours(
+        //   this.livingCells,
+        // );
 
-          // Checking game of lifes rules.
-          if (
-            (isCurrentCellAlive && currentCellNeighboursCount == 2) ||
-            currentCellNeighboursCount == 3
-          ) {
-            continue;
-          } else if (!isCurrentCellAlive && currentCellNeighboursCount == 3) {
-            // If the cell is dead and has three neighbours, it becomes a living cell.
-            continue;
-          } else {
-            // This removed the living cell from the living cells generation array.
-            delete this.livingCells[currentCellID];
-          }
+        const currentCellNeighboursCount = globalCountNeighbours(
+          this.columns,
+          this.rows,
+          this.livingCells,
+          [i, j],
+        );
+
+        // Checking game of lifes rules.
+        if (
+          (isCurrentCellAlive && currentCellNeighboursCount == 2) ||
+          currentCellNeighboursCount == 3
+        ) {
+          continue;
+        } else if (!isCurrentCellAlive && currentCellNeighboursCount == 3) {
+          // If the cell is dead and has three neighbours, it becomes a living cell.
+          this.livingCells[currentCellID] = new Cell(this.columns, this.rows);
+        } else {
+          // This removed the living cell from the living cells generation array.
+          delete this.livingCells[currentCellID];
         }
       }
     }
   }
 }
+
+const globalCountNeighbours = (
+  columns: number,
+  rows: number,
+  livingCells: livingCells,
+  cellCoords: Array<number>,
+): number => {
+  /**
+   * @description Checks how many alive neighbours a cell has
+   * and sends the number .
+   *
+   * @param {array} livingCells - The coordinantes of the cell to check.
+   * @return {number} - Number of living neighbour cells.
+   */
+
+  let numOfAliveNeighbourCells = 0;
+  const [positionX, positionY] = cellCoords;
+
+  for (let i = -1; i <= 1; i++) {
+    for (let j = -1; j <= 1; j++) {
+      // To prevent counting the current cell if it's alive.
+      if (i === 0 && j === 0) continue;
+
+      const neighbourCell = {
+        positionX: (positionX + i + columns) % columns,
+        positionY: (positionY + j + rows) % rows,
+      };
+
+      const neighbourCellID = `${neighbourCell.positionX}${neighbourCell.positionY}`;
+
+      const isNeighbourCellAlive = livingCells[neighbourCellID] !== undefined;
+
+      if (isNeighbourCellAlive) numOfAliveNeighbourCells++;
+    }
+  }
+
+  return numOfAliveNeighbourCells;
+};

@@ -255,3 +255,11 @@ footer li::selection,
   background-color: azure;
   cursor: grab;
 }
+
+.swicthes {
+  display: flex;
+  gap: 2rem;
+  flex-direction: row;
+  padding-block-start: 1rem;
+  padding-block-end: 1rem;
+}
