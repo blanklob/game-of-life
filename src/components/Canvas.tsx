@@ -74,6 +74,7 @@ const Canvas: React.FC = () => {
         currentCell.positionY * cellSize,
       );
     }
+    generation.create();
   };
 
   const draw = (p5: p5Types): void => {

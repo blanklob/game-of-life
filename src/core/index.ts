@@ -12,81 +12,25 @@
  *
  */
 
-import { arrayIncludes, removeItemFromArray, getRandomInt } from '../utils';
+import { getRandomInt } from '../utils';
 
-export function createGeneration(
-  dimensions: [number, number],
-  livingCellsGeneration: aliveCellsArrayType,
-): aliveCellsArrayType {
-  /**
-   * @description Checks how many neighbors a cell has and returns
-   *
-   * @return {array} - Number of living neighbour cells.
-   */
-
-  const [columns, rows] = dimensions;
-
-  for (let i = 0; i < columns; i++) {
-    for (let j = 0; j < rows; j++) {
-      const currentCell: [number, number] = [i, j];
-      // Todo array includes utiles has a problem
-      const currentCellIsAlive = arrayIncludes(
-        livingCellsGeneration,
-        currentCell,
-      );
-
-      const currentCellNeighboursCount = countCellNeighbours(
-        dimensions,
-        currentCell,
-        livingCellsGeneration,
-      );
-
-      // Checking game of lifes rules.
-      if (
-        (currentCellIsAlive && currentCellNeighboursCount == 2) ||
-        currentCellNeighboursCount == 3
-      ) {
-        continue;
-      } else if (!currentCellIsAlive && currentCellNeighboursCount == 3) {
-        // If the cell is dead and has three neighbours, it becomes a living cell.
-        livingCellsGeneration.push(currentCell);
-      } else {
-        // This removed the living cell from the living cells generation array.
-        if (currentCellIsAlive) {
-          livingCellsGeneration = removeItemFromArray(
-            livingCellsGeneration,
-            currentCell,
-          );
-        }
-      }
-    }
-  }
-
-  return livingCellsGeneration;
+export interface livingCells {
+  [id: string]: Cell;
 }
 
-interface CellsType {
+export class Cell {
+  readonly id: number;
   columns: number;
   rows: number;
   positionX: number;
   positionY: number;
   isAlive: Boolean;
   numOfNeighbours: number;
-}
-
-interface livingCellsType {
-  [id: string]: CellsType;
-}
-
-export class Cell implements CellsType {
-  columns: number;
-  rows: number;
-  positionX: number;
-  positionY: number;
-  isAlive: Boolean;
-  numOfNeighbours: number;
+  static count: number = 0;
 
   constructor(columns: number, rows: number, isAlive: boolean = true) {
+    // Cell's ID is the 2d coords in the grid.
+    this.id = ++Cell.count;
     this.columns = columns;
     this.rows = rows;
     this.positionX = getRandomInt(this.columns);
@@ -95,7 +39,7 @@ export class Cell implements CellsType {
     this.numOfNeighbours = 0;
   }
 
-  countNeighbours(livingCells: livingCellsType): number {
+  countNeighbours(livingCells: livingCells): number {
     /**
      * @description Checks how many alive neighbours a cell has
      * and sends the number .
@@ -131,13 +75,13 @@ export class Cell implements CellsType {
 export interface GenerationType {
   columns: number;
   rows: number;
-  livingCells: livingCellsType;
+  livingCells: livingCells;
   numOfInitialCells: number;
   maxNumOfCells: number;
 }
 
 export class Generation implements GenerationType {
-  livingCells: livingCellsType;
+  livingCells: livingCells;
   columns: number;
   rows: number;
   numOfInitialCells: number;
@@ -173,5 +117,35 @@ export class Generation implements GenerationType {
     }
   }
 
-  run(): void {}
+  create(): void {
+    for (let i = 0; i < this.columns; i++) {
+      for (let j = 0; j < this.rows; j++) {
+        const currentCellID = `${i}${j}`;
+        const isCurrentCellAlive =
+          this.livingCells[currentCellID] !== undefined;
+
+        // TODO: Check for dead cells
+        if (isCurrentCellAlive) {
+          const cell = this.livingCells[currentCellID];
+          const currentCellNeighboursCount = cell.countNeighbours(
+            this.livingCells,
+          );
+
+          // Checking game of lifes rules.
+          if (
+            (isCurrentCellAlive && currentCellNeighboursCount == 2) ||
+            currentCellNeighboursCount == 3
+          ) {
+            continue;
+          } else if (!isCurrentCellAlive && currentCellNeighboursCount == 3) {
+            // If the cell is dead and has three neighbours, it becomes a living cell.
+            continue;
+          } else {
+            // This removed the living cell from the living cells generation array.
+            delete this.livingCells[currentCellID];
+          }
+        }
+      }
+    }
+  }
 }
