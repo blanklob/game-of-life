@@ -4,9 +4,9 @@ import p5Types from 'p5';
 import { Generation } from '../core';
 import { generateRandomColors } from '../utils';
 
-const cellSize = 60;
+const cellSize = 20;
 const colortThreshold = 100;
-const numOfInitialCells = 100;
+const numOfInitialCells = 1000;
 const frameRates = 60;
 const showGridLines = true;
 const showCells = true;
@@ -34,6 +34,7 @@ const Canvas: React.FC = () => {
   const benchmark = (p5: p5Types): void => {
     const currentFrameRates = Math.floor(p5.frameRate());
     const currentTime = Math.ceil(p5.frameCount / 60);
+
     counterElement.html(`${currentFrameRates} Fps`);
     timeElement.html(`${currentTime} Seconds`);
   };
