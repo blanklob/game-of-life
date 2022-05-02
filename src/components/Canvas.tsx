@@ -1,7 +1,7 @@
 import React from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
-import { Generation } from '../core';
+import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
 const cellSize = 30;
@@ -24,19 +24,58 @@ let generation = new Generation(columns, rows, numOfInitialCells);
 const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
   let timeElement: p5Types.Element;
+  let cellsCounterElement: p5Types.Element;
+  let cellTooltipElement: p5Types.Element;
 
-  const cell = (p5: p5Types, x: number, y: number): void => {
-    p5.fill(colors.foreground);
+  const cell = (p5: p5Types, currentCell: Cell): void => {
+    const { id, positionX, positionY, numOfNeighbours } = currentCell;
+    const x = positionX * cellSize;
+    const y = positionY * cellSize;
+
+    const cellColor = p5.color(colors.foreground);
+
+    if (mouseOverCell(p5, x, y, cellSize)) {
+      cellColor.setAlpha(255 * Math.abs(p5.sin(p5.millis() / 200) / 2));
+      p5.fill(cellColor);
+      drawCellTooltip(p5, x, y, id, numOfNeighbours);
+    } else {
+      cellColor.setAlpha(255);
+      p5.fill(cellColor);
+    }
+
     p5.rect(x, y, cellSize, cellSize);
     p5.noStroke();
   };
 
+  const drawCellTooltip = (
+    p5: p5Types,
+    x: number,
+    y: number,
+    id: number,
+    numOfNeighbours: number,
+  ): void => {
+    cellTooltipElement.html(
+      `Cell Id #${id} <br /> Neighbours ${numOfNeighbours}`,
+    );
+
+    // Constraint the tooltip to the screen
+    if (p5.winMouseX >= 80 && p5.winMouseY >= 80)
+      cellTooltipElement.position(x - cellSize * 2, y - cellSize * 2);
+    else if (p5.winMouseX < 80 && p5.winMouseY >= 80)
+      cellTooltipElement.position(x - cellSize * -1, y - cellSize * 2);
+    else if (p5.winMouseX >= 80 && p5.winMouseY < 80)
+      cellTooltipElement.position(x - cellSize * 2, y - cellSize * -1);
+    else cellTooltipElement.position(x - cellSize * -1, y - cellSize * -1);
+  };
+
   const benchmark = (p5: p5Types): void => {
     const currentFrameRates = Math.floor(p5.frameRate());
-    const currentTime = Math.ceil(p5.frameCount / frameRates);
+    const currentTime = Math.ceil(p5.millis() / 1000);
+    const cellsLeftInGeneration = Object.keys(generation.livingCells).length;
 
     counterElement.html(`${currentFrameRates} Fps`);
     timeElement.html(`${currentTime} Seconds`);
+    cellsCounterElement.html(`${cellsLeftInGeneration} Cells Left`);
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element): void => {
@@ -49,8 +88,13 @@ const Canvas: React.FC = () => {
     if (showBenchmark) {
       counterElement = p5.createSpan();
       timeElement = p5.createSpan();
+      cellsCounterElement = p5.createSpan();
+      cellTooltipElement = p5.createSpan();
+
       counterElement.addClass('counter');
       timeElement.addClass('time');
+      cellsCounterElement.addClass('cells');
+      cellTooltipElement.addClass('tooltip');
     }
   };
 
@@ -70,11 +114,7 @@ const Canvas: React.FC = () => {
   const drawGeneration = (p5: p5Types): void => {
     for (const cellID in generation.livingCells) {
       const currentCell = generation.livingCells[cellID];
-      cell(
-        p5,
-        currentCell.positionX * cellSize,
-        currentCell.positionY * cellSize,
-      );
+      cell(p5, currentCell);
     }
     generation.new();
   };
@@ -82,9 +122,9 @@ const Canvas: React.FC = () => {
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
+    if (showBenchmark) benchmark(p5);
     if (showCells) drawGeneration(p5);
     if (showGridLines) drawGridLines(p5);
-    if (showBenchmark) benchmark(p5);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
@@ -109,6 +149,24 @@ const Canvas: React.FC = () => {
     columns = Math.ceil(dimensions.width / cellSize);
     rows = Math.ceil(dimensions.height / cellSize);
     p5.resizeCanvas(dimensions.width, dimensions.height);
+  };
+
+  const mouseOverCell = (
+    p5: p5Types,
+    x: number,
+    y: number,
+    size: number,
+  ): boolean => {
+    if (
+      p5.mouseX >= x &&
+      p5.mouseX <= x + size &&
+      p5.mouseY >= y &&
+      p5.mouseY <= y + size
+    ) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   return (
