@@ -4,11 +4,10 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
-const cellSize = 8;
+const cellSize = 50;
 const numOfInitialCells = isTouchDevice()
   ? Math.floor((30 * 100) / cellSize)
   : Math.floor((150 * 100) / cellSize);
-console.log(numOfInitialCells);
 
 const colorThreshold = 100;
 const frameRates = 30;
