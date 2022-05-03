@@ -4,7 +4,7 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
-const cellSize = 30;
+const cellSize = 8;
 const numOfInitialCells = isTouchDevice()
   ? Math.floor((30 * 100) / cellSize)
   : Math.floor((150 * 100) / cellSize);
@@ -29,6 +29,7 @@ const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
   let timeElement: p5Types.Element;
   let cellsCounterElement: p5Types.Element;
+  let livingCellsCounterElement: p5Types.Element;
   let cellTooltipElement: p5Types.Element;
 
   const cell = (p5: p5Types, currentCell: Cell): void => {
@@ -91,7 +92,7 @@ const Canvas: React.FC = () => {
 
     counterElement.html(`${currentFrameRates} Fps`);
     timeElement.html(`${currentTime} Seconds`);
-    cellsCounterElement.html(`${cellsLeftInGeneration} Cells Left`);
+    livingCellsCounterElement.html(`${cellsLeftInGeneration} Cells Left`);
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element): void => {
@@ -105,12 +106,16 @@ const Canvas: React.FC = () => {
       counterElement = p5.createSpan();
       timeElement = p5.createSpan();
       cellsCounterElement = p5.createSpan();
+      livingCellsCounterElement = p5.createSpan();
       cellTooltipElement = p5.createSpan();
 
       counterElement.addClass('counter');
       timeElement.addClass('time');
       cellsCounterElement.addClass('cells');
+      livingCellsCounterElement.addClass('living-cells');
       cellTooltipElement.addClass('tooltip');
+
+      cellsCounterElement.html(`${columns * rows} Cells`);
     }
   };
 

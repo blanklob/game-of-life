@@ -237,6 +237,7 @@ footer li::selection {
 .counter,
 .time,
 .cells,
+.living-cells,
 .tooltip {
   position: absolute;
   inset-block-start: 8rem;
@@ -252,6 +253,10 @@ footer li::selection {
 .cells,
 .tooltip {
   inset-block-start: 14rem;
+}
+
+.living-cells {
+  inset-block-start: 17rem;
 }
 
 .window {
