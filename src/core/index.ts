@@ -26,15 +26,14 @@ export class Cell {
   positionY: number;
   isAlive: Boolean;
   numOfNeighbours: number;
-  static count: number = 0;
 
   constructor(columns: number, rows: number, isAlive: boolean = true) {
     // Cell's ID is the 2d coords in the grid.
-    this.id = ++Cell.count;
     this.columns = columns;
     this.rows = rows;
     this.positionX = getRandomInt(this.columns);
     this.positionY = getRandomInt(this.rows);
+    this.id = parseInt(`${this.positionX}${this.positionY}`);
     this.isAlive = isAlive;
     this.numOfNeighbours = 0;
   }
@@ -106,12 +105,10 @@ export class Generation implements GenerationType {
 
     while (this.numOfInitialCells > 0) {
       const cell = new Cell(this.columns, this.rows);
-      const cellID = `${cell.positionX}${cell.positionY}`;
-
-      const isCellAlreadyExist = this.livingCells[cellID] !== undefined;
+      const isCellAlreadyExist = this.livingCells[cell.id] !== undefined;
 
       if (!isCellAlreadyExist) {
-        this.livingCells[cellID] = cell;
+        this.livingCells[cell.id] = cell;
         this.numOfInitialCells--;
       }
     }

@@ -131,6 +131,7 @@ button {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  pointer-events: all;
 }
 
 header {
@@ -138,6 +139,7 @@ header {
   inset-inline-start: 2rem;
   inset-block-start: 2rem;
   inset-inline-end: 0rem;
+  pointer-events: none;
 }
 
 nav > ul {
@@ -173,7 +175,8 @@ canvas {
   overflow: hidden;
   padding: 0.5rem;
   cursor: grab;
-  z-index: 2;
+  z-index: 3;
+  pointer-events: all;
 }
 
 .dashboard:active {
@@ -239,7 +242,7 @@ footer li::selection {
   inset-block-start: 8rem;
   inset-inline-start: 2rem;
   text-transform: uppercase;
-  z-index: 10;
+  z-index: 2;
 }
 
 .time {

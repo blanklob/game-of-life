@@ -5,8 +5,12 @@ import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
 const cellSize = 30;
-const colortThreshold = 100;
-const numOfInitialCells = isTouchDevice() ? 100 : 500;
+const numOfInitialCells = isTouchDevice()
+  ? Math.floor((30 * 100) / cellSize)
+  : Math.floor((150 * 100) / cellSize);
+console.log(numOfInitialCells);
+
+const colorThreshold = 100;
 const frameRates = 30;
 const showGridLines = true;
 const showCells = true;
@@ -18,7 +22,7 @@ let dimensions = {
 };
 let columns = Math.ceil(dimensions.width / cellSize);
 let rows = Math.ceil(dimensions.height / cellSize);
-let colors = generateRandomColors(colortThreshold);
+let colors = generateRandomColors(colorThreshold);
 let generation = new Generation(columns, rows, numOfInitialCells);
 
 const Canvas: React.FC = () => {
@@ -34,10 +38,10 @@ const Canvas: React.FC = () => {
 
     const cellColor = p5.color(colors.foreground);
 
-    if (mouseOverCell(p5, x, y, cellSize)) {
+    if (mouseOverCell(p5, x, y)) {
       cellColor.setAlpha(255 * Math.abs(p5.sin(p5.millis() / 200) / 2));
       p5.fill(cellColor);
-      drawCellTooltip(p5, x, y, id, numOfNeighbours);
+      if (showBenchmark) drawCellTooltip(p5, x, y, id, numOfNeighbours);
     } else {
       cellColor.setAlpha(255);
       p5.fill(cellColor);
@@ -54,18 +58,30 @@ const Canvas: React.FC = () => {
     id: number,
     numOfNeighbours: number,
   ): void => {
+    const tooltipOffset = 25;
+    cellTooltipElement.show();
     cellTooltipElement.html(
       `Cell Id #${id} <br /> Neighbours ${numOfNeighbours}`,
     );
 
     // Constraint the tooltip to the screen
     if (p5.winMouseX >= 80 && p5.winMouseY >= 80)
-      cellTooltipElement.position(x - cellSize * 2, y - cellSize * 2);
+      cellTooltipElement.position(x - tooltipOffset * 2, y - tooltipOffset * 2);
     else if (p5.winMouseX < 80 && p5.winMouseY >= 80)
-      cellTooltipElement.position(x - cellSize * -1, y - cellSize * 2);
+      cellTooltipElement.position(
+        x - tooltipOffset * -1,
+        y - tooltipOffset * 2,
+      );
     else if (p5.winMouseX >= 80 && p5.winMouseY < 80)
-      cellTooltipElement.position(x - cellSize * 2, y - cellSize * -1);
-    else cellTooltipElement.position(x - cellSize * -1, y - cellSize * -1);
+      cellTooltipElement.position(
+        x - tooltipOffset * 2,
+        y - tooltipOffset * -1,
+      );
+    else
+      cellTooltipElement.position(
+        x - tooltipOffset * -1,
+        y - tooltipOffset * -1,
+      );
   };
 
   const benchmark = (p5: p5Types): void => {
@@ -132,12 +148,13 @@ const Canvas: React.FC = () => {
       event.target === document.getElementById('canvas') &&
       enableRandomColorGeneration
     ) {
-      colors = generateRandomColors(colortThreshold);
+      colors = generateRandomColors(colorThreshold);
     } else if (event.target === document.getElementById('pause')) {
       if (p5.isLooping()) p5.noLoop();
       else p5.loop();
     } else if (event.target === document.getElementById('restart')) {
       generation = new Generation(columns, rows, numOfInitialCells);
+      cellTooltipElement.hide();
     }
   };
 
@@ -151,17 +168,12 @@ const Canvas: React.FC = () => {
     p5.resizeCanvas(dimensions.width, dimensions.height);
   };
 
-  const mouseOverCell = (
-    p5: p5Types,
-    x: number,
-    y: number,
-    size: number,
-  ): boolean => {
+  const mouseOverCell = (p5: p5Types, x: number, y: number): boolean => {
     if (
       p5.mouseX >= x &&
-      p5.mouseX <= x + size &&
+      p5.mouseX <= x + cellSize &&
       p5.mouseY >= y &&
-      p5.mouseY <= y + size
+      p5.mouseY <= y + cellSize
     ) {
       return true;
     } else {
