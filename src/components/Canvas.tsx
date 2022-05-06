@@ -9,7 +9,7 @@ import {
   changeFaviconColor,
 } from '../utils';
 
-const scaleFactor = isTouchDevice() ? 1 : 2;
+const scaleFactor = isTouchDevice() ? 1 : 1.8;
 const cellSize = 12;
 const colorThreshold = 100;
 const frameRates = 30;
@@ -182,25 +182,25 @@ const Canvas: React.FC = () => {
   };
 
   const cursor = (p5: p5Types): void => {
+    p5.noStroke();
     p5.ellipse(
       p5.mouseX,
       p5.mouseY,
       cellSize * scaleFactor,
       cellSize * scaleFactor,
     );
-    p5.noStroke();
   };
 
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
+    cursor(p5);
+    metaManipulation(p5);
+
     if (enableScale) scale(p5, scaleFactor);
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
     if (showCells) drawGeneration(p5);
-
-    cursor(p5);
-    metaManipulation(p5);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
