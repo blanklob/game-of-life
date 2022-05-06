@@ -2,7 +2,12 @@ import React from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Generation, Cell } from '../core';
-import { generateRandomColors, isTouchDevice } from '../utils';
+import {
+  generateRandomColors,
+  isTouchDevice,
+  changeThemeColor,
+  changeFaviconColor,
+} from '../utils';
 
 const scaleFactor = isTouchDevice() ? 1 : 2;
 const cellSize = 12;
@@ -153,6 +158,10 @@ const Canvas: React.FC = () => {
 
   const drawGeneration = (p5: p5Types): void => {
     if (!pauseGame) generation.new(colors.foreground);
+
+    changeThemeColor(p5.color(colors.foreground).toString());
+    changeFaviconColor(colors.foreground, colors.background);
+    document.title = `Game of Life – ${generation.numOfLivingCells} Cells Left`;
 
     for (let i = 0; i < columns; i++) {
       for (let j = 0; j < rows; j++) {

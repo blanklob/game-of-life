@@ -1,3 +1,5 @@
+import { MetaHTMLAttributes } from 'react';
+
 export function equalsArray(
   firstArray: Array<number>,
   secondArray: Array<number>,
@@ -129,4 +131,47 @@ export const generateRandomColors = (threshold: number) => {
     foreground,
     background,
   };
+};
+
+export const changeThemeColor = (color: string) => {
+  const metaThemeColor = document.querySelector(
+    'meta[name=theme-color]',
+  ) as HTMLElement;
+  metaThemeColor.setAttribute('content', color);
+};
+
+export const changeFaviconColor = (
+  foregroundColor: Array<number>,
+  backgroundColor: Array<number>,
+) => {
+  const metaFavicon = document.querySelector(
+    "link[rel~='icon']",
+  ) as HTMLAnchorElement;
+
+  const svgFavicon = `<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23${RGBAToHexA(
+    backgroundColor[0],
+    backgroundColor[1],
+    backgroundColor[2],
+  )}%22 x=%220%22 y=%220%22 width=%22100%22 height=%22100%22 /><rect fill=%22%23${RGBAToHexA(
+    foregroundColor[0],
+    foregroundColor[1],
+    foregroundColor[2],
+  )}%22 x=%2225%22 y=%2225%22 width=%2230%22 height=%2230%22 /></svg>`;
+  metaFavicon.href = `data:image/svg+xml,${svgFavicon}`;
+};
+
+export const RGBAToHexA = (
+  r: number | string,
+  g: number | string,
+  b: number | string,
+) => {
+  r = r.toString(16);
+  g = g.toString(16);
+  b = b.toString(16);
+
+  if (r.length == 1) r = '0' + r;
+  if (g.length == 1) g = '0' + g;
+  if (b.length == 1) b = '0' + b;
+
+  return r + g + b;
 };
