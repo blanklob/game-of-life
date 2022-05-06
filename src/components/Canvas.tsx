@@ -156,12 +156,14 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const drawGeneration = (p5: p5Types): void => {
-    if (!pauseGame) generation.new(colors.foreground);
-
+  const metaManipulation = (p5: p5Types): void => {
     changeThemeColor(p5.color(colors.foreground).toString());
     changeFaviconColor(colors.foreground, colors.background);
     document.title = `Game of Life – ${generation.numOfLivingCells} Cells Left`;
+  };
+
+  const drawGeneration = (p5: p5Types): void => {
+    if (!pauseGame) generation.new(colors.foreground);
 
     for (let i = 0; i < columns; i++) {
       for (let j = 0; j < rows; j++) {
@@ -192,12 +194,13 @@ const Canvas: React.FC = () => {
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
-    // Mouse Cursor
-    cursor(p5);
     if (enableScale) scale(p5, scaleFactor);
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
     if (showCells) drawGeneration(p5);
+
+    cursor(p5);
+    metaManipulation(p5);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {

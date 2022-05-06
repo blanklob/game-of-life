@@ -3,7 +3,6 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Canvas from './components/Canvas';
 import Window from './components/Window';
-import './index.css';
 
 export default function App() {
   return (
