@@ -239,6 +239,7 @@ footer li::selection {
 .time,
 .cells,
 .living-cells,
+.intial-living-cells,
 .tooltip {
   position: absolute;
   inset-block-start: 8rem;
@@ -256,8 +257,12 @@ footer li::selection {
   inset-block-start: 14rem;
 }
 
-.living-cells {
+.intial-living-cells {
   inset-block-start: 17rem;
+}
+
+.living-cells {
+  inset-block-start: 20rem;
 }
 
 .window {

@@ -4,7 +4,7 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
-const cellSize = 60;
+const cellSize = 25;
 const numOfInitialCells = isTouchDevice()
   ? Math.floor((5 * 100) / cellSize)
   : Math.floor((50 * 100) / cellSize);
@@ -26,16 +26,16 @@ let [columns, rows] = [
 let [canvasScrollX, canvasScrollY] = [0, 0];
 let canvas: p5Types.Renderer;
 let colors = generateRandomColors(colorThreshold);
-let generation = new Generation(columns, rows, numOfInitialCells);
-let currentLivingCells = generation.livingCells;
-console.log(currentLivingCells);
+let generation = new Generation(columns, rows);
 
 const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
   let timeElement: p5Types.Element;
   let cellsCounterElement: p5Types.Element;
   let livingCellsCounterElement: p5Types.Element;
+  let initialCellsCounterElement: p5Types.Element;
   let cellTooltipElement: p5Types.Element;
+  let pauseGame: boolean = false;
 
   const cell = (p5: p5Types, currentCell: Cell): void => {
     const { id, positionX, positionY, numOfNeighbours } = currentCell;
@@ -52,6 +52,7 @@ const Canvas: React.FC = () => {
       cellColor.setAlpha(255);
       p5.fill(cellColor);
     }
+
     p5.rect(x + canvasScrollX, y + canvasScrollY, cellSize, cellSize);
     p5.noStroke();
   };
@@ -92,7 +93,7 @@ const Canvas: React.FC = () => {
   const benchmark = (p5: p5Types): void => {
     const currentFrameRates = Math.floor(p5.frameRate());
     const currentTime = Math.ceil(p5.millis() / 1000);
-    const cellsLeftInGeneration = Object.keys(generation.livingCells).length;
+    const cellsLeftInGeneration = generation.numOfLivingCells;
 
     counterElement.html(`${currentFrameRates} Fps`);
     timeElement.html(`${currentTime} Seconds`);
@@ -121,14 +122,19 @@ const Canvas: React.FC = () => {
       timeElement = p5.createSpan();
       cellsCounterElement = p5.createSpan();
       livingCellsCounterElement = p5.createSpan();
+      initialCellsCounterElement = p5.createSpan();
       cellTooltipElement = p5.createSpan();
 
       counterElement.addClass('counter');
       timeElement.addClass('time');
       cellsCounterElement.addClass('cells');
       livingCellsCounterElement.addClass('living-cells');
+      initialCellsCounterElement.addClass('intial-living-cells');
       cellTooltipElement.addClass('tooltip');
 
+      initialCellsCounterElement.html(
+        `${generation.numOfInitialCells} Initial Cells`,
+      );
       cellsCounterElement.html(`${columns * rows} Total Cells`);
     }
   };
@@ -147,26 +153,22 @@ const Canvas: React.FC = () => {
   };
 
   const drawGeneration = (p5: p5Types): void => {
-    for (const cellID in generation.livingCells) {
-      const currentCell = generation.livingCells[cellID];
-      cell(p5, currentCell);
-    }
+    if (!pauseGame) generation.new();
 
-    currentLivingCells = generation.livingCells;
-    generation.new(currentLivingCells);
+    for (let i = 0; i < columns; i++) {
+      for (let j = 0; j < rows; j++) {
+        const currentCell = generation.cells[i][j];
+        if (currentCell.isAlive) cell(p5, currentCell);
+      }
+    }
   };
 
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
     if (showBenchmark) benchmark(p5);
-    if (showCells) drawGeneration(p5);
     if (showGridLines) drawGridLines(p5);
-  };
-
-  const pauseGame = (p5: p5Types): void => {
-    if (p5.isLooping()) p5.noLoop();
-    else p5.loop();
+    if (showCells) drawGeneration(p5);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
@@ -176,9 +178,10 @@ const Canvas: React.FC = () => {
     ) {
       colors = generateRandomColors(colorThreshold);
     } else if (event.target === document.getElementById('pause')) {
-      pauseGame(p5);
+      pauseGame = !pauseGame;
+      console.log(pauseGame);
     } else if (event.target === document.getElementById('restart')) {
-      generation = new Generation(columns, rows, numOfInitialCells);
+      generation = new Generation(columns, rows);
       cellTooltipElement.hide();
     }
   };

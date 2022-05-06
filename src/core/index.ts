@@ -7,43 +7,106 @@
  *
  * #1 Rule: Survival. Every cell with two or three neighbors survives to the next generation.
  * #2 Rule: Overpopulation. Each cell with four or more neighbors dies from Overpopulation.
- * #3 Rule: Isolation. Each cell with one neighbor or none dies from isolation.
+ * #3 Rule: Loneliness. Each cell with one neighbor or none dies from isolation.
  * #4 Rule: Reproduction: Any dead cell with exactly three neighbours becomes a living cell.
  *
  */
 
-import { getRandomInt } from '../utils';
+import { getRandomInt, create2DMatrix } from '../utils';
 
-export interface livingCells {
-  [id: string]: Cell;
+export type Cells = Array<Array<Cell>>;
+
+export interface GenerationType {
+  columns: number;
+  rows: number;
+  cells: Cells;
+  maxNumOfCells: number;
 }
 
 export class Cell {
-  readonly id: number;
-  columns: number;
-  rows: number;
+  readonly id: number = 0;
   positionX: number;
   positionY: number;
-  isAlive: Boolean;
+  isAlive?: Boolean;
   numOfNeighbours: number;
 
-  constructor(columns: number, rows: number, isAlive: boolean = true) {
+  constructor(positionX: number, positionY: number, isAlive?: boolean) {
     // Cell's ID is the 2d coords in the grid.
-    this.columns = columns;
-    this.rows = rows;
-    this.positionX = getRandomInt(this.columns);
-    this.positionY = getRandomInt(this.rows);
-    this.id = parseInt(`${this.positionX}${this.positionY}`);
-    this.isAlive = isAlive;
+    this.id = parseInt(`${positionX}${positionY}`);
+    this.positionX = positionX;
+    this.positionY = positionY;
+    this.isAlive = isAlive ?? getRandomInt(15) === 1;
     this.numOfNeighbours = 0;
   }
+}
 
-  countNeighbours(livingCells: livingCells): number {
+export class Generation implements GenerationType {
+  columns: number;
+  rows: number;
+  cells: Cells;
+  oldCells: Cells;
+  maxNumOfCells: number;
+  numOfLivingCells: number;
+  numOfInitialCells: number;
+
+  constructor(columns: number, rows: number) {
+    /**
+     * @description Creates the first cells (generation zero) in the grid randomly.
+     *
+     * @param {number} columns - The number of columns in the grid.
+     * @param {number} rows - The number of rows cells in the grid.
+     */
+
+    this.columns = columns;
+    this.rows = rows;
+    this.cells = create2DMatrix(this.columns, this.rows);
+    this.maxNumOfCells = this.columns * this.rows;
+    this.numOfLivingCells = 0;
+
+    for (let i = 0; i < this.columns; i++) {
+      for (let j = 0; j < this.rows; j++) {
+        if (i === 0 || j === 0 || i === this.columns - 1 || j >= this.rows - 2)
+          this.cells[i][j] = new Cell(i, j, false);
+        else {
+          this.cells[i][j] = new Cell(i, j);
+          if (this.cells[i][j].isAlive) this.numOfLivingCells++;
+        }
+      }
+    }
+
+    this.oldCells = this.cells;
+    this.numOfInitialCells = this.numOfLivingCells;
+  }
+
+  new(): void {
+    this.oldCells = this.cells;
+
+    for (let i = 0; i < this.columns; i++) {
+      for (let j = 0; j < this.rows; j++) {
+        const currentCell = this.oldCells[i][j];
+        currentCell.numOfNeighbours =
+          this.countNeighbourLivingCells(currentCell);
+
+        if (currentCell.isAlive && currentCell.numOfNeighbours < 2) {
+          this.cells[i][j].isAlive = false; // Loneliness
+          this.numOfLivingCells--;
+        } else if (currentCell.isAlive && currentCell.numOfNeighbours > 3) {
+          this.cells[i][j].isAlive = false; // Overpopulation
+          this.numOfLivingCells--;
+        } else if (!currentCell.isAlive && currentCell.numOfNeighbours == 3) {
+          this.cells[i][j].isAlive = true; // Reproduction
+          this.numOfLivingCells++;
+        } else this.cells[i][j].isAlive = currentCell.isAlive; // Survival
+      }
+    }
+  }
+
+  countNeighbourLivingCells(cell: Cell): number {
     /**
      * @description Checks how many alive neighbours a cell has
      * and sends the number .
      *
-     * @param {array} livingCells - The coordinantes of the cell to check.
+     * @param {array} cell - The cell to check.
      * @return {number} - Number of living neighbour cells.
      */
 
@@ -55,13 +118,13 @@ export class Cell {
         if (i === 0 && j === 0) continue;
 
         const neighbourCell = {
-          positionX: (this.positionX + i + this.columns) % this.columns,
-          positionY: (this.positionY + j + this.rows) % this.rows,
+          positionX: (cell.positionX + i + this.columns) % this.columns,
+          positionY: (cell.positionY + j + this.rows) % this.rows,
         };
 
-        const neighbourCellID = `${neighbourCell.positionX}${neighbourCell.positionY}`;
-
-        const isNeighbourCellAlive = livingCells[neighbourCellID] !== undefined;
+        const isNeighbourCellAlive =
+          this.oldCells[neighbourCell.positionX][neighbourCell.positionY]
+            .isAlive;
 
         if (isNeighbourCellAlive) numOfAliveNeighbourCells++;
       }
@@ -70,120 +133,3 @@ export class Cell {
     return numOfAliveNeighbourCells;
   }
 }
-
-export interface GenerationType {
-  columns: number;
-  rows: number;
-  livingCells: livingCells;
-  numOfInitialCells: number;
-  maxNumOfCells: number;
-}
-
-export class Generation implements GenerationType {
-  columns: number;
-  rows: number;
-  livingCells: livingCells;
-  numOfInitialCells: number;
-  maxNumOfCells: number;
-
-  constructor(columns: number, rows: number, numOfInitialCells: number) {
-    /**
-     * @description Creates the first cells (generation zero) in the grid randomly.
-     *
-     * @param {number} numOfInitialCells - The number of initials cells in the grid.
-     */
-
-    this.livingCells = {};
-    this.numOfInitialCells = numOfInitialCells;
-    this.columns = columns;
-    this.rows = rows;
-    this.maxNumOfCells = this.columns * this.rows;
-
-    // Limit the number of initial cells to max num of Cells, if it's surpasses the grid limit.
-    if (this.numOfInitialCells > this.maxNumOfCells)
-      this.numOfInitialCells = this.maxNumOfCells;
-
-    while (this.numOfInitialCells > 0) {
-      const cell = new Cell(this.columns, this.rows);
-      const isCellAlreadyExist = this.livingCells[cell.id] !== undefined;
-
-      if (!isCellAlreadyExist) {
-        this.livingCells[cell.id] = cell;
-        this.numOfInitialCells--;
-      }
-    }
-  }
-
-  new(lastGeneration: livingCells): void {
-    for (let i = 0; i < this.columns; i++) {
-      for (let j = 0; j < this.rows; j++) {
-        const currentCellID = `${i}${j}`;
-        const isCurrentCellAlive = lastGeneration[currentCellID] !== undefined;
-
-        // TODO: Check for dead cells (Make countNeighbours global)
-        // const currentCellNeighboursCount = cell.countNeighbours(
-        //   this.livingCells,
-        // );
-
-        const currentCellNeighboursCount = globalCountNeighbours(
-          this.columns,
-          this.rows,
-          lastGeneration,
-          [i, j],
-        );
-
-        // Checking game of lifes rules.
-        if (
-          (isCurrentCellAlive && currentCellNeighboursCount == 2) ||
-          currentCellNeighboursCount == 3
-        ) {
-          continue;
-        } else if (!isCurrentCellAlive && currentCellNeighboursCount == 3) {
-          // If the cell is dead and has three neighbours, it becomes a living cell.
-          this.livingCells[currentCellID] = new Cell(this.columns, this.rows);
-        } else {
-          // This removed the living cell from the living cells generation array.
-          delete this.livingCells[currentCellID];
-        }
-      }
-    }
-  }
-}
-
-const globalCountNeighbours = (
-  columns: number,
-  rows: number,
-  livingCells: livingCells,
-  cellCoords: Array<number>,
-): number => {
-  /**
-   * @description Checks how many alive neighbours a cell has
-   * and sends the number .
-   *
-   * @param {array} livingCells - The coordinantes of the cell to check.
-   * @return {number} - Number of living neighbour cells.
-   */
-
-  let numOfAliveNeighbourCells = 0;
-  const [positionX, positionY] = cellCoords;
-
-  for (let i = -1; i <= 1; i++) {
-    for (let j = -1; j <= 1; j++) {
-      // To prevent counting the current cell if it's alive.
-      if (i === 0 && j === 0) continue;
-
-      const neighbourCell = {
-        positionX: (positionX + i + columns) % columns,
-        positionY: (positionY + j + rows) % rows,
-      };
-
-      const neighbourCellID = `${neighbourCell.positionX}${neighbourCell.positionY}`;
-
-      const isNeighbourCellAlive = livingCells[neighbourCellID] !== undefined;
-
-      if (isNeighbourCellAlive) numOfAliveNeighbourCells++;
-    }
-  }
-
-  return numOfAliveNeighbourCells;
-};
