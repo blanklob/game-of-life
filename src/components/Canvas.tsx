@@ -4,11 +4,11 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors } from '../utils';
 
-const scaleFactor = 3;
-const enableScale = true;
-const cellSize = 8;
+const scaleFactor = 1;
+const cellSize = 10;
 const colorThreshold = 100;
 const frameRates = 30;
+const enableScale = true;
 const showGridLines = false;
 const showCells = true;
 const showBenchmark = true;
@@ -170,6 +170,13 @@ const Canvas: React.FC = () => {
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
+    p5.noCursor();
+    p5.ellipse(
+      p5.mouseX,
+      p5.mouseY,
+      cellSize * scaleFactor,
+      cellSize * scaleFactor,
+    );
     if (enableScale) scale(p5, scaleFactor);
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
