@@ -112,8 +112,8 @@ const Canvas: React.FC = () => {
     p5.frameRate(frameRates);
 
     canvas.mouseWheel((event) => {
-      canvasScrollX += 0.15 * event.wheelDeltaX;
-      canvasScrollY += 0.15 * event.wheelDeltaY;
+      canvasScrollX += 0.2 * event.wheelDeltaX;
+      canvasScrollY += 0.2 * event.wheelDeltaY;
     });
 
     if (showBenchmark) {
@@ -170,17 +170,21 @@ const Canvas: React.FC = () => {
     p5.translate(-wx, -hy);
   };
 
-  const draw = (p5: p5Types): void => {
-    p5.background(colors.background);
-
-    // Mouse Cursor
+  const cursor = (p5: p5Types): void => {
     p5.ellipse(
       p5.mouseX,
       p5.mouseY,
       cellSize * scaleFactor,
       cellSize * scaleFactor,
     );
+    p5.noStroke();
+  };
 
+  const draw = (p5: p5Types): void => {
+    p5.background(colors.background);
+
+    // Mouse Cursor
+    cursor(p5);
     if (enableScale) scale(p5, scaleFactor);
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
