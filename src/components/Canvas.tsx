@@ -170,13 +170,14 @@ const Canvas: React.FC = () => {
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
-    p5.noCursor();
+    // Mouse Cursor
     p5.ellipse(
       p5.mouseX,
       p5.mouseY,
       cellSize * scaleFactor,
       cellSize * scaleFactor,
     );
+
     if (enableScale) scale(p5, scaleFactor);
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
