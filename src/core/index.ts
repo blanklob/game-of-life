@@ -98,7 +98,13 @@ export class Generation implements GenerationType {
           this.countNeighbourLivingCells(currentCell);
 
         if (
-          !(i === 0 || j === 0 || i === this.columns - 1 || j === this.rows - 1)
+          !(
+            i === 0 ||
+            j === 0 ||
+            i === this.columns - 1 ||
+            j === this.rows - 1
+          ) ||
+          false
         ) {
           if (currentCell.isAlive && currentCell.numOfNeighbours < 2) {
             this.cells[i][j].isAlive = false; // Death because of Loneliness

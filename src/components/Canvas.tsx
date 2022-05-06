@@ -4,14 +4,15 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
-const cellSize = 14;
+const scaleFactor = 1;
+const cellSize = 10 * scaleFactor;
 const numOfInitialCells = isTouchDevice()
   ? Math.floor((5 * 100) / cellSize)
   : Math.floor((50 * 100) / cellSize);
 
 const colorThreshold = 100;
 const frameRates = 30;
-const showGridLines = true;
+const showGridLines = false;
 const showCells = true;
 const showBenchmark = true;
 const enableRandomColorGeneration = true;
@@ -20,8 +21,8 @@ let dimensions = {
   height: window.innerHeight,
 };
 let [columns, rows] = [
-  Math.ceil(dimensions.width / cellSize),
-  Math.ceil(dimensions.height / cellSize),
+  Math.ceil((dimensions.width * scaleFactor) / cellSize),
+  Math.ceil((dimensions.height * scaleFactor) / cellSize),
 ];
 let [canvasScrollX, canvasScrollY] = [0, 0];
 let canvas: p5Types.Renderer;
@@ -110,12 +111,15 @@ const Canvas: React.FC = () => {
     p5.background(colors.background);
     p5.frameRate(frameRates);
 
-    if (false)
-      canvas.mouseWheel((event) => {
-        // @ts-ignore
-        canvasScrollX += 0.1 * event.wheelDeltaX;
-        canvasScrollY += 0.1 * event.wheelDeltaY;
-      });
+    canvas.mouseWheel((event) => {
+      canvasScrollX += 0.15 * event.wheelDeltaX;
+      canvasScrollY += 0.15 * event.wheelDeltaY;
+    });
+
+    window.addEventListener('wheel', (event) => {
+      if (event.deltaY > 0) scaleFactor *= 1.01;
+      else scaleFactor *= 0.99;
+    });
 
     if (showBenchmark) {
       counterElement = p5.createSpan();
@@ -165,6 +169,12 @@ const Canvas: React.FC = () => {
 
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
+
+    // const mx = dimensions.width / 2;
+    // const my = dimensions.height / 2;
+    // p5.translate(mx, my);
+    // p5.scale(scaleFactor, scaleFactor);
+    // p5.translate(-mx, -my);
 
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
