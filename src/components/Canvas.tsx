@@ -4,39 +4,45 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
-const cellSize = 50;
-const numOfInitialCells = isTouchDevice()
-  ? Math.floor((30 * 100) / cellSize)
-  : Math.floor((150 * 100) / cellSize);
-
+const scaleFactor = isTouchDevice() ? 1 : 2;
+const cellSize = 12;
 const colorThreshold = 100;
 const frameRates = 30;
-const showGridLines = true;
+
+const enableScale = true;
+const showGridLines = false;
 const showCells = true;
 const showBenchmark = true;
 const enableRandomColorGeneration = true;
+
 let dimensions = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
-let columns = Math.ceil(dimensions.width / cellSize);
-let rows = Math.ceil(dimensions.height / cellSize);
+let [columns, rows] = [
+  Math.ceil(dimensions.width / cellSize),
+  Math.ceil(dimensions.height / cellSize),
+];
+let [canvasScrollX, canvasScrollY] = [0, 0];
+let canvas: p5Types.Renderer;
 let colors = generateRandomColors(colorThreshold);
-let generation = new Generation(columns, rows, numOfInitialCells);
+let generation = new Generation(columns, rows, colors.foreground);
 
 const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
   let timeElement: p5Types.Element;
   let cellsCounterElement: p5Types.Element;
   let livingCellsCounterElement: p5Types.Element;
+  let initialCellsCounterElement: p5Types.Element;
   let cellTooltipElement: p5Types.Element;
+  let pauseGame: boolean = false;
 
   const cell = (p5: p5Types, currentCell: Cell): void => {
-    const { id, positionX, positionY, numOfNeighbours } = currentCell;
+    const { id, positionX, positionY, numOfNeighbours, color } = currentCell;
     const x = positionX * cellSize;
     const y = positionY * cellSize;
 
-    const cellColor = p5.color(colors.foreground);
+    const cellColor = p5.color(color);
 
     if (mouseOverCell(p5, x, y)) {
       cellColor.setAlpha(255 * Math.abs(p5.sin(p5.millis() / 200) / 2));
@@ -47,8 +53,9 @@ const Canvas: React.FC = () => {
       p5.fill(cellColor);
     }
 
-    p5.rect(x, y, cellSize, cellSize);
-    p5.noStroke();
+    p5.rect(x + canvasScrollX, y + canvasScrollY, cellSize, cellSize);
+    if (showGridLines) p5.noStroke();
+    else p5.stroke(colors.background);
   };
 
   const drawCellTooltip = (
@@ -87,7 +94,7 @@ const Canvas: React.FC = () => {
   const benchmark = (p5: p5Types): void => {
     const currentFrameRates = Math.floor(p5.frameRate());
     const currentTime = Math.ceil(p5.millis() / 1000);
-    const cellsLeftInGeneration = Object.keys(generation.livingCells).length;
+    const cellsLeftInGeneration = generation.numOfLivingCells;
 
     counterElement.html(`${currentFrameRates} Fps`);
     timeElement.html(`${currentTime} Seconds`);
@@ -96,25 +103,38 @@ const Canvas: React.FC = () => {
 
   const setup = (p5: p5Types, canvasParentRef: Element): void => {
     const { width, height } = dimensions;
-    p5.createCanvas(width, height).parent(canvasParentRef).id('canvas');
+    canvas = p5
+      .createCanvas(width, height)
+      .parent(canvasParentRef)
+      .id('canvas');
 
     p5.background(colors.background);
     p5.frameRate(frameRates);
+
+    canvas.mouseWheel((event) => {
+      canvasScrollX += 0.2 * event.wheelDeltaX;
+      canvasScrollY += 0.2 * event.wheelDeltaY;
+    });
 
     if (showBenchmark) {
       counterElement = p5.createSpan();
       timeElement = p5.createSpan();
       cellsCounterElement = p5.createSpan();
       livingCellsCounterElement = p5.createSpan();
+      initialCellsCounterElement = p5.createSpan();
       cellTooltipElement = p5.createSpan();
 
       counterElement.addClass('counter');
       timeElement.addClass('time');
       cellsCounterElement.addClass('cells');
       livingCellsCounterElement.addClass('living-cells');
+      initialCellsCounterElement.addClass('intial-living-cells');
       cellTooltipElement.addClass('tooltip');
 
-      cellsCounterElement.html(`${columns * rows} Cells`);
+      initialCellsCounterElement.html(
+        `${generation.numOfInitialCells} Initial Cells`,
+      );
+      cellsCounterElement.html(`${columns * rows} Total Cells`);
     }
   };
 
@@ -132,19 +152,43 @@ const Canvas: React.FC = () => {
   };
 
   const drawGeneration = (p5: p5Types): void => {
-    for (const cellID in generation.livingCells) {
-      const currentCell = generation.livingCells[cellID];
-      cell(p5, currentCell);
+    if (!pauseGame) generation.new(colors.foreground);
+
+    for (let i = 0; i < columns; i++) {
+      for (let j = 0; j < rows; j++) {
+        const currentCell = generation.cells[i][j];
+        if (currentCell.isAlive) cell(p5, currentCell);
+      }
     }
-    generation.new();
+  };
+
+  const scale = (p5: p5Types, scaleFactor: number): void => {
+    const [wx, hy] = [dimensions.width / 2, dimensions.width / 2];
+
+    p5.translate(wx, hy);
+    p5.scale(scaleFactor, scaleFactor);
+    p5.translate(-wx, -hy);
+  };
+
+  const cursor = (p5: p5Types): void => {
+    p5.ellipse(
+      p5.mouseX,
+      p5.mouseY,
+      cellSize * scaleFactor,
+      cellSize * scaleFactor,
+    );
+    p5.noStroke();
   };
 
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
+    // Mouse Cursor
+    cursor(p5);
+    if (enableScale) scale(p5, scaleFactor);
     if (showBenchmark) benchmark(p5);
-    if (showCells) drawGeneration(p5);
     if (showGridLines) drawGridLines(p5);
+    if (showCells) drawGeneration(p5);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
@@ -154,10 +198,9 @@ const Canvas: React.FC = () => {
     ) {
       colors = generateRandomColors(colorThreshold);
     } else if (event.target === document.getElementById('pause')) {
-      if (p5.isLooping()) p5.noLoop();
-      else p5.loop();
+      pauseGame = !pauseGame;
     } else if (event.target === document.getElementById('restart')) {
-      generation = new Generation(columns, rows, numOfInitialCells);
+      generation = new Generation(columns, rows, colors.foreground);
       cellTooltipElement.hide();
     }
   };

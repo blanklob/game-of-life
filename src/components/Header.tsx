@@ -3,6 +3,26 @@ import Dashboard from './Dashboard';
 import ExternalLink from './ExternalLink';
 
 export default function Header() {
+  document.addEventListener(
+    'keydown',
+    (event: KeyboardEvent) => {
+      if (event.key === 'SPACE') {
+        toggleFullScreen();
+      }
+    },
+    false,
+  );
+
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
   return (
     <header>
       <nav role={'navigation'}>

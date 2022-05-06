@@ -83,6 +83,23 @@ export const getRandomInt = (max: number) => {
   return Math.floor(Math.random() * max);
 };
 
+export const create2DMatrix = (columns: number, rows: number) => {
+  /**
+   * @description Creates a 2D Matrix array.
+   *
+   * @param {number} - columns - the number of columns in the Array.
+   * @param {number} - rows - the number of rows in the Array.
+   * @return {Array} - The generated empty array
+   */
+
+  const matrix = new Array(columns);
+  for (let i = 0; i < matrix.length; i++) {
+    matrix[i] = new Array(rows);
+  }
+
+  return matrix;
+};
+
 export const generateRandomColors = (threshold: number) => {
   /**
    * @description Return a random color combination.
