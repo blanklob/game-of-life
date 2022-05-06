@@ -2,17 +2,19 @@ import React from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Generation, Cell } from '../core';
-import { generateRandomColors } from '../utils';
+import { generateRandomColors, isTouchDevice } from '../utils';
 
-const scaleFactor = 1;
-const cellSize = 10;
+const scaleFactor = isTouchDevice() ? 1 : 2;
+const cellSize = 12;
 const colorThreshold = 100;
 const frameRates = 30;
+
 const enableScale = true;
 const showGridLines = false;
 const showCells = true;
 const showBenchmark = true;
 const enableRandomColorGeneration = true;
+
 let dimensions = {
   width: window.innerWidth,
   height: window.innerHeight,
@@ -52,7 +54,8 @@ const Canvas: React.FC = () => {
     }
 
     p5.rect(x + canvasScrollX, y + canvasScrollY, cellSize, cellSize);
-    p5.noStroke();
+    if (showGridLines) p5.noStroke();
+    else p5.stroke(colors.background);
   };
 
   const drawCellTooltip = (
