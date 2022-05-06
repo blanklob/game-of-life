@@ -4,10 +4,10 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
-const cellSize = 50;
+const cellSize = 60;
 const numOfInitialCells = isTouchDevice()
-  ? Math.floor((30 * 100) / cellSize)
-  : Math.floor((150 * 100) / cellSize);
+  ? Math.floor((5 * 100) / cellSize)
+  : Math.floor((50 * 100) / cellSize);
 
 const colorThreshold = 100;
 const frameRates = 30;
@@ -19,10 +19,16 @@ let dimensions = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
-let columns = Math.ceil(dimensions.width / cellSize);
-let rows = Math.ceil(dimensions.height / cellSize);
+let [columns, rows] = [
+  Math.ceil(dimensions.width / cellSize),
+  Math.ceil(dimensions.height / cellSize),
+];
+let [canvasScrollX, canvasScrollY] = [0, 0];
+let canvas: p5Types.Renderer;
 let colors = generateRandomColors(colorThreshold);
 let generation = new Generation(columns, rows, numOfInitialCells);
+let currentLivingCells = generation.livingCells;
+console.log(currentLivingCells);
 
 const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
@@ -46,8 +52,7 @@ const Canvas: React.FC = () => {
       cellColor.setAlpha(255);
       p5.fill(cellColor);
     }
-
-    p5.rect(x, y, cellSize, cellSize);
+    p5.rect(x + canvasScrollX, y + canvasScrollY, cellSize, cellSize);
     p5.noStroke();
   };
 
@@ -96,10 +101,20 @@ const Canvas: React.FC = () => {
 
   const setup = (p5: p5Types, canvasParentRef: Element): void => {
     const { width, height } = dimensions;
-    p5.createCanvas(width, height).parent(canvasParentRef).id('canvas');
+    canvas = p5
+      .createCanvas(width, height)
+      .parent(canvasParentRef)
+      .id('canvas');
 
     p5.background(colors.background);
     p5.frameRate(frameRates);
+
+    if (false)
+      canvas.mouseWheel((event) => {
+        // @ts-ignore
+        canvasScrollX += 0.1 * event.wheelDeltaX;
+        canvasScrollY += 0.1 * event.wheelDeltaY;
+      });
 
     if (showBenchmark) {
       counterElement = p5.createSpan();
@@ -114,7 +129,7 @@ const Canvas: React.FC = () => {
       livingCellsCounterElement.addClass('living-cells');
       cellTooltipElement.addClass('tooltip');
 
-      cellsCounterElement.html(`${columns * rows} Cells`);
+      cellsCounterElement.html(`${columns * rows} Total Cells`);
     }
   };
 
@@ -136,7 +151,9 @@ const Canvas: React.FC = () => {
       const currentCell = generation.livingCells[cellID];
       cell(p5, currentCell);
     }
-    generation.new();
+
+    currentLivingCells = generation.livingCells;
+    generation.new(currentLivingCells);
   };
 
   const draw = (p5: p5Types): void => {
@@ -147,6 +164,11 @@ const Canvas: React.FC = () => {
     if (showGridLines) drawGridLines(p5);
   };
 
+  const pauseGame = (p5: p5Types): void => {
+    if (p5.isLooping()) p5.noLoop();
+    else p5.loop();
+  };
+
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
     if (
       event.target === document.getElementById('canvas') &&
@@ -154,8 +176,7 @@ const Canvas: React.FC = () => {
     ) {
       colors = generateRandomColors(colorThreshold);
     } else if (event.target === document.getElementById('pause')) {
-      if (p5.isLooping()) p5.noLoop();
-      else p5.loop();
+      pauseGame(p5);
     } else if (event.target === document.getElementById('restart')) {
       generation = new Generation(columns, rows, numOfInitialCells);
       cellTooltipElement.hide();

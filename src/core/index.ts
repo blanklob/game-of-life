@@ -80,9 +80,9 @@ export interface GenerationType {
 }
 
 export class Generation implements GenerationType {
-  livingCells: livingCells;
   columns: number;
   rows: number;
+  livingCells: livingCells;
   numOfInitialCells: number;
   maxNumOfCells: number;
 
@@ -114,12 +114,11 @@ export class Generation implements GenerationType {
     }
   }
 
-  new(): void {
+  new(lastGeneration: livingCells): void {
     for (let i = 0; i < this.columns; i++) {
       for (let j = 0; j < this.rows; j++) {
         const currentCellID = `${i}${j}`;
-        const isCurrentCellAlive =
-          this.livingCells[currentCellID] !== undefined;
+        const isCurrentCellAlive = lastGeneration[currentCellID] !== undefined;
 
         // TODO: Check for dead cells (Make countNeighbours global)
         // const currentCellNeighboursCount = cell.countNeighbours(
@@ -129,7 +128,7 @@ export class Generation implements GenerationType {
         const currentCellNeighboursCount = globalCountNeighbours(
           this.columns,
           this.rows,
-          this.livingCells,
+          lastGeneration,
           [i, j],
         );
 
