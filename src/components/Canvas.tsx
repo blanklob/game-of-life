@@ -4,7 +4,7 @@ import p5Types from 'p5';
 import { Generation, Cell } from '../core';
 import { generateRandomColors, isTouchDevice } from '../utils';
 
-const cellSize = 25;
+const cellSize = 14;
 const numOfInitialCells = isTouchDevice()
   ? Math.floor((5 * 100) / cellSize)
   : Math.floor((50 * 100) / cellSize);
@@ -26,7 +26,7 @@ let [columns, rows] = [
 let [canvasScrollX, canvasScrollY] = [0, 0];
 let canvas: p5Types.Renderer;
 let colors = generateRandomColors(colorThreshold);
-let generation = new Generation(columns, rows);
+let generation = new Generation(columns, rows, colors.foreground);
 
 const Canvas: React.FC = () => {
   let counterElement: p5Types.Element;
@@ -38,11 +38,11 @@ const Canvas: React.FC = () => {
   let pauseGame: boolean = false;
 
   const cell = (p5: p5Types, currentCell: Cell): void => {
-    const { id, positionX, positionY, numOfNeighbours } = currentCell;
+    const { id, positionX, positionY, numOfNeighbours, color } = currentCell;
     const x = positionX * cellSize;
     const y = positionY * cellSize;
 
-    const cellColor = p5.color(colors.foreground);
+    const cellColor = p5.color(color);
 
     if (mouseOverCell(p5, x, y)) {
       cellColor.setAlpha(255 * Math.abs(p5.sin(p5.millis() / 200) / 2));
@@ -153,7 +153,7 @@ const Canvas: React.FC = () => {
   };
 
   const drawGeneration = (p5: p5Types): void => {
-    if (!pauseGame) generation.new();
+    if (!pauseGame) generation.new(colors.foreground);
 
     for (let i = 0; i < columns; i++) {
       for (let j = 0; j < rows; j++) {
@@ -179,9 +179,8 @@ const Canvas: React.FC = () => {
       colors = generateRandomColors(colorThreshold);
     } else if (event.target === document.getElementById('pause')) {
       pauseGame = !pauseGame;
-      console.log(pauseGame);
     } else if (event.target === document.getElementById('restart')) {
-      generation = new Generation(columns, rows);
+      generation = new Generation(columns, rows, colors.foreground);
       cellTooltipElement.hide();
     }
   };

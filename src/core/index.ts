@@ -29,14 +29,21 @@ export class Cell {
   positionY: number;
   isAlive?: Boolean;
   numOfNeighbours: number;
+  color: number[];
 
-  constructor(positionX: number, positionY: number, isAlive?: boolean) {
+  constructor(
+    positionX: number,
+    positionY: number,
+    color: number[],
+    isAlive?: boolean,
+  ) {
     // Cell's ID is the 2d coords in the grid.
     this.id = parseInt(`${positionX}${positionY}`);
     this.positionX = positionX;
     this.positionY = positionY;
-    this.isAlive = isAlive ?? getRandomInt(15) === 1;
+    this.isAlive = isAlive ?? getRandomInt(20) === 1;
     this.numOfNeighbours = 0;
+    this.color = color;
   }
 }
 
@@ -48,8 +55,9 @@ export class Generation implements GenerationType {
   maxNumOfCells: number;
   numOfLivingCells: number;
   numOfInitialCells: number;
+  color: number[];
 
-  constructor(columns: number, rows: number) {
+  constructor(columns: number, rows: number, color: number[]) {
     /**
      * @description Creates the first cells (generation zero) in the grid randomly.
      *
@@ -62,13 +70,14 @@ export class Generation implements GenerationType {
     this.cells = create2DMatrix(this.columns, this.rows);
     this.maxNumOfCells = this.columns * this.rows;
     this.numOfLivingCells = 0;
+    this.color = color;
 
     for (let i = 0; i < this.columns; i++) {
       for (let j = 0; j < this.rows; j++) {
-        if (i === 0 || j === 0 || i === this.columns - 1 || j >= this.rows - 2)
-          this.cells[i][j] = new Cell(i, j, false);
+        if (i === 0 || j === 0 || i === this.columns - 1 || j == this.rows - 1)
+          this.cells[i][j] = new Cell(i, j, this.color, false);
         else {
-          this.cells[i][j] = new Cell(i, j);
+          this.cells[i][j] = new Cell(i, j, this.color);
           if (this.cells[i][j].isAlive) this.numOfLivingCells++;
         }
       }
@@ -78,8 +87,9 @@ export class Generation implements GenerationType {
     this.numOfInitialCells = this.numOfLivingCells;
   }
 
-  new(): void {
+  new(color: number[]): void {
     this.oldCells = this.cells;
+    this.color = color;
 
     for (let i = 0; i < this.columns; i++) {
       for (let j = 0; j < this.rows; j++) {
@@ -87,16 +97,26 @@ export class Generation implements GenerationType {
         currentCell.numOfNeighbours =
           this.countNeighbourLivingCells(currentCell);
 
-        if (currentCell.isAlive && currentCell.numOfNeighbours < 2) {
-          this.cells[i][j].isAlive = false; // Loneliness
-          this.numOfLivingCells--;
-        } else if (currentCell.isAlive && currentCell.numOfNeighbours > 3) {
-          this.cells[i][j].isAlive = false; // Overpopulation
-          this.numOfLivingCells--;
-        } else if (!currentCell.isAlive && currentCell.numOfNeighbours == 3) {
-          this.cells[i][j].isAlive = true; // Reproduction
-          this.numOfLivingCells++;
-        } else this.cells[i][j].isAlive = currentCell.isAlive; // Survival
+        if (
+          !(i === 0 || j === 0 || i === this.columns - 1 || j === this.rows - 1)
+        ) {
+          if (currentCell.isAlive && currentCell.numOfNeighbours < 2) {
+            this.cells[i][j].isAlive = false; // Death because of Loneliness
+            this.cells[i][j].color = [255, 255, 255, 0.7];
+            this.numOfLivingCells--;
+          } else if (currentCell.isAlive && currentCell.numOfNeighbours > 3) {
+            this.cells[i][j].isAlive = false; // Death because of Overpopulation
+            this.cells[i][j].color = [255, 255, 255, 0.7];
+            this.numOfLivingCells--;
+          } else if (!currentCell.isAlive && currentCell.numOfNeighbours == 3) {
+            this.cells[i][j].isAlive = true; // Reproduction
+            this.cells[i][j].color = [...this.color, 1];
+            this.numOfLivingCells++;
+          } else {
+            this.cells[i][j].isAlive = currentCell.isAlive; // Survival
+            this.cells[i][j].color = [...this.color, 0.8];
+          }
+        }
       }
     }
   }
