@@ -12,7 +12,7 @@
  *
  */
 
-import { getRandomInt, create2DMatrix } from '../utils';
+import { getRandomInt, create2DMatrix, isTouchDevice } from '../utils';
 
 export type Cells = Array<Array<Cell>>;
 
@@ -41,7 +41,7 @@ export class Cell {
     this.id = parseInt(`${positionX}${positionY}`);
     this.positionX = positionX;
     this.positionY = positionY;
-    this.isAlive = isAlive ?? getRandomInt(20) === 1;
+    this.isAlive = isAlive ?? getRandomInt(isTouchDevice() ? 20 : 40) === 1;
     this.numOfNeighbours = 0;
     this.color = color;
   }
@@ -98,13 +98,7 @@ export class Generation implements GenerationType {
           this.countNeighbourLivingCells(currentCell);
 
         if (
-          !(
-            i === 0 ||
-            j === 0 ||
-            i === this.columns - 1 ||
-            j === this.rows - 1
-          ) ||
-          false
+          !(i === 0 || j === 0 || i === this.columns - 1 || j === this.rows - 1)
         ) {
           if (currentCell.isAlive && currentCell.numOfNeighbours < 2) {
             this.cells[i][j].isAlive = false; // Death because of Loneliness

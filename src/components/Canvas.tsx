@@ -2,14 +2,11 @@ import React from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Generation, Cell } from '../core';
-import { generateRandomColors, isTouchDevice } from '../utils';
+import { generateRandomColors } from '../utils';
 
-const scaleFactor = 1;
-const cellSize = 10 * scaleFactor;
-const numOfInitialCells = isTouchDevice()
-  ? Math.floor((5 * 100) / cellSize)
-  : Math.floor((50 * 100) / cellSize);
-
+const scaleFactor = 3;
+const enableScale = true;
+const cellSize = 8;
 const colorThreshold = 100;
 const frameRates = 30;
 const showGridLines = false;
@@ -21,8 +18,8 @@ let dimensions = {
   height: window.innerHeight,
 };
 let [columns, rows] = [
-  Math.ceil((dimensions.width * scaleFactor) / cellSize),
-  Math.ceil((dimensions.height * scaleFactor) / cellSize),
+  Math.ceil(dimensions.width / cellSize),
+  Math.ceil(dimensions.height / cellSize),
 ];
 let [canvasScrollX, canvasScrollY] = [0, 0];
 let canvas: p5Types.Renderer;
@@ -116,11 +113,6 @@ const Canvas: React.FC = () => {
       canvasScrollY += 0.15 * event.wheelDeltaY;
     });
 
-    window.addEventListener('wheel', (event) => {
-      if (event.deltaY > 0) scaleFactor *= 1.01;
-      else scaleFactor *= 0.99;
-    });
-
     if (showBenchmark) {
       counterElement = p5.createSpan();
       timeElement = p5.createSpan();
@@ -167,15 +159,18 @@ const Canvas: React.FC = () => {
     }
   };
 
+  const scale = (p5: p5Types, scaleFactor: number): void => {
+    const [wx, hy] = [dimensions.width / 2, dimensions.width / 2];
+
+    p5.translate(wx, hy);
+    p5.scale(scaleFactor, scaleFactor);
+    p5.translate(-wx, -hy);
+  };
+
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
-    // const mx = dimensions.width / 2;
-    // const my = dimensions.height / 2;
-    // p5.translate(mx, my);
-    // p5.scale(scaleFactor, scaleFactor);
-    // p5.translate(-mx, -my);
-
+    if (enableScale) scale(p5, scaleFactor);
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
     if (showCells) drawGeneration(p5);
