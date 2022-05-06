@@ -10,7 +10,7 @@
     "preview": "vite preview",
     "test": "jest --watch --silent false --config --coverage jest.config.ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "start": "ts-node --project tsconfig.node.json ./src/core/index.ts"
+    "start": "ts-node --project tsnode.config ./src/core/index.ts"
   },
   "dependencies": {
     "@mantine/core": "^4.2.2",

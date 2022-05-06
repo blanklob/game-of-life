@@ -227,12 +227,7 @@ span {
   color: hsl(0, 0%, 0%);
   background-color: hsl(0, 0%, 90%);
   padding: 0 0.5rem;
-}
-
-footer p::selection,
-footer li::selection {
-  background-color: hsl(0, 0%, 0%);
-  color: hsl(0, 0%, 90%);
+  user-select: none;
 }
 
 .counter,
