@@ -9,8 +9,8 @@ import {
   changeFaviconColor,
 } from '../utils';
 
-const scaleFactor = isTouchDevice() ? 1 : 2;
-const cellSize = 12;
+const scaleFactor = isTouchDevice() ? 1 : 4;
+const cellSize = 10 * scaleFactor;
 const colorThreshold = 100;
 const frameRates = 30;
 
@@ -25,8 +25,8 @@ let dimensions = {
   height: window.innerHeight,
 };
 let [columns, rows] = [
-  Math.ceil(dimensions.width / cellSize),
-  Math.ceil(dimensions.height / cellSize),
+  Math.ceil((dimensions.width * scaleFactor) / cellSize),
+  Math.ceil((dimensions.height * scaleFactor) / cellSize),
 ];
 let [canvasScrollX, canvasScrollY] = [0, 0];
 let canvas: p5Types.Renderer;
@@ -49,10 +49,17 @@ const Canvas: React.FC = () => {
 
     const cellColor = p5.color(color);
 
-    if (mouseOverCell(p5, x, y)) {
+    if (mouseOverCell(p5, x + canvasScrollX, y + canvasScrollY)) {
       cellColor.setAlpha(255 * Math.abs(p5.sin(p5.millis() / 200) / 2));
       p5.fill(cellColor);
-      if (showBenchmark) drawCellTooltip(p5, x, y, id, numOfNeighbours);
+      if (showBenchmark)
+        drawCellTooltip(
+          p5,
+          x + canvasScrollX,
+          y + canvasScrollY,
+          id,
+          numOfNeighbours,
+        );
     } else {
       cellColor.setAlpha(255);
       p5.fill(cellColor);
@@ -173,34 +180,25 @@ const Canvas: React.FC = () => {
     }
   };
 
-  const scale = (p5: p5Types, scaleFactor: number): void => {
-    const [wx, hy] = [dimensions.width / 2, dimensions.width / 2];
-
-    p5.translate(wx, hy);
-    p5.scale(scaleFactor, scaleFactor);
-    p5.translate(-wx, -hy);
-  };
-
   const cursor = (p5: p5Types): void => {
+    p5.noStroke();
     p5.ellipse(
       p5.mouseX,
       p5.mouseY,
-      cellSize * scaleFactor,
-      cellSize * scaleFactor,
+      (cellSize * scaleFactor) / 4,
+      (cellSize * scaleFactor) / 4,
     );
-    p5.noStroke();
   };
 
   const draw = (p5: p5Types): void => {
     p5.background(colors.background);
 
-    if (enableScale) scale(p5, scaleFactor);
+    metaManipulation(p5);
     if (showBenchmark) benchmark(p5);
     if (showGridLines) drawGridLines(p5);
     if (showCells) drawGeneration(p5);
 
     cursor(p5);
-    metaManipulation(p5);
   };
 
   const mouseClicked = (p5: p5Types, event: MouseEvent): void => {
