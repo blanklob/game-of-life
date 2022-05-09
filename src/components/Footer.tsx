@@ -17,10 +17,7 @@ export default function Footer() {
           </ExternalLink>
         </li>
         <li>
-          <ExternalLink>Alexandre</ExternalLink>
-        </li>
-        <li>
-          <ExternalLink>Juan</ExternalLink>
+          <ExternalLink link="https://github.com/JuanR-T">Juan</ExternalLink>
         </li>
       </ul>
     </footer>
