@@ -50,7 +50,7 @@ document.body.append(
 );
 
 let generation: Generation;
-let colors: any;
+let colors = generateRandomColors(100);
 
 const Canvas = ({
   showGridLines,
@@ -60,12 +60,13 @@ const Canvas = ({
   scaleFactor,
 }: CanvasProps) => {
   let pauseGame: boolean = false;
-  const cellSize = isTouchDevice() ? 16 * scaleFactor : 12 * scaleFactor;
+  const cellSize = isTouchDevice() ? 8 * scaleFactor : 10 * scaleFactor;
 
   let [columns, rows] = [
     Math.ceil((dimensions.width * scaleFactor) / cellSize),
     Math.ceil((dimensions.height * scaleFactor) / cellSize),
   ];
+  generation = new Generation(columns, rows, colors.foreground);
 
   useEffect(() => {
     colors = generateRandomColors(colorThreshold);
@@ -73,7 +74,7 @@ const Canvas = ({
   }, []);
 
   const cell = (p5: p5Types, currentCell: Cell): void => {
-    const { id, positionX, positionY, numOfNeighbours, color } = currentCell;
+    const { positionX, positionY, color } = currentCell;
     const x = positionX * cellSize;
     const y = positionY * cellSize;
 
@@ -98,7 +99,8 @@ const Canvas = ({
     const cellsLeftInGeneration = generation.numOfLivingCells;
 
     counterElement.textContent = `${currentFrameRates} Fps`;
-    timeElement.textContent = `${currentTime * frameRates} Generations`;
+    if (!pauseGame)
+      timeElement.textContent = `${currentTime * frameRates} Generations`;
     livingCellsCounterElement.textContent = `${cellsLeftInGeneration} Cells Left`;
   };
 
