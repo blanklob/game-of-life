@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useElementSize } from '@mantine/hooks';
 import { Switch } from '@mantine/core';
+import { Slider } from '@mantine/core';
 import { isTouchDevice } from '../utils';
 
 export default function Dashboard() {
@@ -48,11 +49,17 @@ export default function Dashboard() {
           />
         </li>
         <li>
-          <label>Earth dimensions</label>
-          <input
-            onFocus={() => setIsOpen(true)}
-            type="number"
-            name="cellsNumber"
+          <label>Cell scale</label>
+          <Slider
+            defaultValue={1}
+            min={0.5}
+            max={3}
+            label={(value) => value}
+            step={0.5}
+            styles={{ markLabel: { display: 'none' } }}
+            color="gray"
+            size="lg"
+            radius="xs"
           />
         </li>
         <li>

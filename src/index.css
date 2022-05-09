@@ -278,3 +278,9 @@ span {
   padding-block-start: 1rem;
   padding-block-end: 1rem;
 }
+
+[role='slider'] {
+  border-radius: 0 !important;
+  height: 18px !important;
+  width: 18px !important;
+}

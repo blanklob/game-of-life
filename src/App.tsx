@@ -10,7 +10,13 @@ export default function App() {
       <Header />
       <main id="MainContent" tabIndex={-1} role="main">
         <Window />
-        <Canvas />
+        <Canvas
+          showGridLines={false}
+          showCells
+          showBenchmark
+          enableRandomColorGeneration
+          colorThreshold={100}
+        />
       </main>
       <Footer />
     </div>
