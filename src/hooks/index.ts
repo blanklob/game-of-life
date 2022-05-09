@@ -3,8 +3,6 @@ import create from 'zustand';
 interface GameDashboardState {
   showGridLines: boolean;
   setShowGridLines: (showGridLines: boolean) => void;
-  showBenchmark: boolean;
-  setShowBenchmark: (showBenchmark: boolean) => void;
   enableRandomColorGeneration: boolean;
   setEnableRandomColorGeneration: (
     enableRandomColorGeneration: boolean,
@@ -21,12 +19,6 @@ const useStore = create<GameDashboardState>((set) => ({
     set((state) => ({
       ...state,
       showGridLines,
-    })),
-  showBenchmark: true,
-  setShowBenchmark: (showBenchmark) =>
-    set((state) => ({
-      ...state,
-      showBenchmark,
     })),
   enableRandomColorGeneration: true,
   setEnableRandomColorGeneration: (enableRandomColorGeneration) =>

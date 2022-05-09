@@ -8,7 +8,6 @@ import useStore from './hooks';
 export default function App() {
   const {
     showGridLines,
-    showBenchmark,
     colorThreshold,
     scaleFactor,
     enableRandomColorGeneration,
@@ -22,7 +21,6 @@ export default function App() {
         <Canvas
           showCells
           showGridLines={showGridLines}
-          showBenchmark={showBenchmark}
           enableRandomColorGeneration={enableRandomColorGeneration}
           colorThreshold={colorThreshold}
           scaleFactor={scaleFactor}

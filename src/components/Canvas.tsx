@@ -21,7 +21,6 @@ let canvas: p5Types.Renderer;
 interface CanvasProps {
   showGridLines: boolean;
   showCells: boolean;
-  showBenchmark: boolean;
   enableRandomColorGeneration: boolean;
   colorThreshold: number;
   scaleFactor: number;
@@ -40,13 +39,22 @@ cellsCounterElement.classList.add('cells');
 livingCellsCounterElement.classList.add('living-cells');
 initialCellsCounterElement.classList.add('intial-living-cells');
 cellTooltipElement.classList.add('tooltip');
+
+document.body.append(
+  counterElement,
+  timeElement,
+  cellsCounterElement,
+  livingCellsCounterElement,
+  initialCellsCounterElement,
+  cellTooltipElement,
+);
+
 let generation: Generation;
 let colors: any;
 
 const Canvas = ({
   showGridLines,
   showCells,
-  showBenchmark,
   enableRandomColorGeneration,
   colorThreshold,
   scaleFactor,
@@ -71,17 +79,9 @@ const Canvas = ({
 
     const cellColor = p5.color(color);
 
-    if (mouseOverCell(p5, x + canvasScrollX, y + canvasScrollY) && false) {
+    if (mouseOverCell(p5, x + canvasScrollX, y + canvasScrollY)) {
       cellColor.setAlpha(255 * Math.abs(p5.sin(p5.millis() / 200) / 2));
       p5.fill(cellColor);
-      if (showBenchmark)
-        drawCellTooltip(
-          p5,
-          x + canvasScrollX,
-          y + canvasScrollY,
-          id,
-          numOfNeighbours,
-        );
     } else {
       cellColor.setAlpha(255);
       p5.fill(cellColor);
@@ -90,37 +90,6 @@ const Canvas = ({
     p5.rect(x + canvasScrollX, y + canvasScrollY, cellSize, cellSize);
     if (showGridLines) p5.noStroke();
     else p5.stroke(colors.background);
-  };
-
-  const drawCellTooltip = (
-    p5: p5Types,
-    x: number,
-    y: number,
-    id: number,
-    numOfNeighbours: number,
-  ): void => {
-    const tooltipOffset = 25;
-    cellTooltipElement.hidden = false;
-    cellTooltipElement.innerHTML = `Cell Id #${id} <br /> Neighbours ${numOfNeighbours}`;
-
-    // // Constraint the tooltip to the screen
-    // if (p5.winMouseX >= 80 && p5.winMouseY >= 80)
-    //   cellTooltipElement.position(x - tooltipOffset * 2, y - tooltipOffset * 2);
-    // else if (p5.winMouseX < 80 && p5.winMouseY >= 80)
-    //   cellTooltipElement.position(
-    //     x - tooltipOffset * -1,
-    //     y - tooltipOffset * 2,
-    //   );
-    // else if (p5.winMouseX >= 80 && p5.winMouseY < 80)
-    //   cellTooltipElement.position(
-    //     x - tooltipOffset * 2,
-    //     y - tooltipOffset * -1,
-    //   );
-    // else
-    //   cellTooltipElement.position(
-    //     x - tooltipOffset * -1,
-    //     y - tooltipOffset * -1,
-    //   );
   };
 
   const benchmark = (p5: p5Types): void => {
@@ -148,10 +117,8 @@ const Canvas = ({
       canvasScrollY += 0.2 * event.wheelDeltaY;
     });
 
-    if (showBenchmark) {
-      initialCellsCounterElement.textContent = `${generation.numOfInitialCells} Initial Cells`;
-      cellsCounterElement.textContent = `${columns * rows} Total Cells`;
-    }
+    initialCellsCounterElement.textContent = `${generation.numOfInitialCells} Initial Cells`;
+    cellsCounterElement.textContent = `${columns * rows} Total Cells`;
   };
 
   const drawGridLines = (p5: p5Types): void => {
@@ -193,7 +160,7 @@ const Canvas = ({
     p5.background(colors.background);
 
     metaManipulation(p5);
-    if (showBenchmark) benchmark(p5);
+    benchmark(p5);
     if (showGridLines) drawGridLines(p5);
     if (showCells) drawGeneration(p5);
 

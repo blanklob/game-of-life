@@ -12,12 +12,10 @@ export default function Dashboard() {
   const touchDevice = isTouchDevice();
   const {
     setShowGridLines,
-    setShowBenchmark,
     setColorThreshold,
     setScaleFactor,
     setEnableRandomColorGeneration,
     showGridLines,
-    showBenchmark,
     colorThreshold,
     scaleFactor,
     enableRandomColorGeneration,
@@ -52,14 +50,6 @@ export default function Dashboard() {
         Settings
       </h3>
       <ul role="list">
-        {/* <li>
-          <label>Number of intial cells</label>
-          <input
-            onFocus={() => setIsOpen(true)}
-            type="number"
-            name="cellsNumber"
-          />
-        </li> */}
         <li>
           <label>Cell scale</label>
           <Slider
@@ -88,16 +78,6 @@ export default function Dashboard() {
             radius="xs"
             defaultValue={colorThreshold}
             onChange={setColorThreshold}
-          />
-        </li>
-        <li>
-          <label>Show Benchmark tools</label>
-          <Switch
-            size="xs"
-            radius="xs"
-            color="gray"
-            checked={showBenchmark}
-            onChange={(event) => setShowBenchmark(event.currentTarget.checked)}
           />
         </li>
         <li>
