@@ -21,10 +21,10 @@ export default function Dashboard() {
     enableRandomColorGeneration,
   } = useStore((state) => state);
 
-  let [dashboardWidth, dashboardHeight] = [300, 420];
+  let [dashboardWidth, dashboardHeight] = [300, 350];
 
   if (touchDevice)
-    [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 420];
+    [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 350];
 
   const variants = {
     opened: { width: dashboardWidth, height: dashboardHeight },
