@@ -60,7 +60,7 @@ const Canvas = ({
   scaleFactor,
 }: CanvasProps) => {
   let pauseGame: boolean = false;
-  const cellSize = isTouchDevice() ? 6 * scaleFactor : 10 * scaleFactor;
+  const cellSize = isTouchDevice() ? 16 * scaleFactor : 12 * scaleFactor;
 
   let [columns, rows] = [
     Math.ceil((dimensions.width * scaleFactor) / cellSize),
