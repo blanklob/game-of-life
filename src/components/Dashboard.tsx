@@ -4,12 +4,24 @@ import { useElementSize } from '@mantine/hooks';
 import { Switch } from '@mantine/core';
 import { Slider } from '@mantine/core';
 import { isTouchDevice } from '../utils';
+import useStore from '../hooks';
 
 export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
-  const [checked, setChecked] = useState(true);
   const { ref, width, height } = useElementSize();
   const touchDevice = isTouchDevice();
+  const {
+    setShowGridLines,
+    setShowBenchmark,
+    setColorThreshold,
+    setScaleFactor,
+    setEnableRandomColorGeneration,
+    showGridLines,
+    showBenchmark,
+    colorThreshold,
+    scaleFactor,
+    enableRandomColorGeneration,
+  } = useStore((state) => state);
 
   let [dashboardWidth, dashboardHeight] = [300, 490];
 
@@ -82,17 +94,31 @@ export default function Dashboard() {
             size="xs"
             radius="xs"
             color="gray"
-            checked={checked}
-            onChange={(event) => setChecked(event.currentTarget.checked)}
+            checked={showBenchmark}
+            onChange={(event) => setShowBenchmark(event.currentTarget.checked)}
           />
         </li>
         <li>
           <label>Enable Colors</label>
-          <Switch checked={checked} size="xs" radius="xs" color="gray" />
+          <Switch
+            size="xs"
+            radius="xs"
+            color="gray"
+            checked={enableRandomColorGeneration}
+            onChange={(event) =>
+              setEnableRandomColorGeneration(event.currentTarget.checked)
+            }
+          />
         </li>
         <li>
           <label>Show Grid Lines</label>
-          <Switch size="xs" radius="xs" color="gray" />
+          <Switch
+            size="xs"
+            radius="xs"
+            color="gray"
+            checked={showGridLines}
+            onChange={(event) => setShowGridLines(event.currentTarget.checked)}
+          />
         </li>
         <li className="buttons">
           <button role="button" id="pause">

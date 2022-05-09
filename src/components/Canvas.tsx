@@ -43,7 +43,6 @@ const Canvas = ({
   let cellTooltipElement: p5Types.Element;
   let pauseGame: boolean = false;
   let colors = generateRandomColors(colorThreshold);
-
   const cellSize = isTouchDevice() ? 6 * scaleFactor : 10 * scaleFactor;
 
   let [columns, rows] = [
@@ -192,12 +191,7 @@ const Canvas = ({
 
   const cursor = (p5: p5Types): void => {
     p5.noStroke();
-    p5.ellipse(
-      p5.mouseX,
-      p5.mouseY,
-      (cellSize * scaleFactor) / 4,
-      (cellSize * scaleFactor) / 4,
-    );
+    p5.ellipse(p5.mouseX, p5.mouseY, cellSize, cellSize);
   };
 
   const draw = (p5: p5Types): void => {
