@@ -98,7 +98,7 @@ const Canvas = ({
     const cellsLeftInGeneration = generation.numOfLivingCells;
 
     counterElement.textContent = `${currentFrameRates} Fps`;
-    timeElement.textContent = `${currentTime} Seconds`;
+    timeElement.textContent = `${currentTime * currentFrameRates} Generations`;
     livingCellsCounterElement.textContent = `${cellsLeftInGeneration} Cells Left`;
   };
 
