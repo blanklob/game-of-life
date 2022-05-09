@@ -23,10 +23,10 @@ export default function Dashboard() {
     enableRandomColorGeneration,
   } = useStore((state) => state);
 
-  let [dashboardWidth, dashboardHeight] = [300, 490];
+  let [dashboardWidth, dashboardHeight] = [300, 420];
 
   if (touchDevice)
-    [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 490];
+    [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 420];
 
   const variants = {
     opened: { width: dashboardWidth, height: dashboardHeight },
@@ -52,14 +52,14 @@ export default function Dashboard() {
         Settings
       </h3>
       <ul role="list">
-        <li>
+        {/* <li>
           <label>Number of intial cells</label>
           <input
             onFocus={() => setIsOpen(true)}
             type="number"
             name="cellsNumber"
           />
-        </li>
+        </li> */}
         <li>
           <label>Cell scale</label>
           <Slider

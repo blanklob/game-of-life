@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Sketch from 'react-p5';
 import p5Types from 'p5';
 import { Generation, Cell } from '../core';
@@ -27,6 +27,22 @@ interface CanvasProps {
   scaleFactor: number;
 }
 
+let counterElement = document.createElement('span');
+let timeElement = document.createElement('span');
+let cellsCounterElement = document.createElement('span');
+let livingCellsCounterElement = document.createElement('span');
+let initialCellsCounterElement = document.createElement('span');
+let cellTooltipElement = document.createElement('span');
+
+counterElement.classList.add('counter');
+timeElement.classList.add('time');
+cellsCounterElement.classList.add('cells');
+livingCellsCounterElement.classList.add('living-cells');
+initialCellsCounterElement.classList.add('intial-living-cells');
+cellTooltipElement.classList.add('tooltip');
+let generation: Generation;
+let colors: any;
+
 const Canvas = ({
   showGridLines,
   showCells,
@@ -35,21 +51,18 @@ const Canvas = ({
   colorThreshold,
   scaleFactor,
 }: CanvasProps) => {
-  let counterElement: p5Types.Element;
-  let timeElement: p5Types.Element;
-  let cellsCounterElement: p5Types.Element;
-  let livingCellsCounterElement: p5Types.Element;
-  let initialCellsCounterElement: p5Types.Element;
-  let cellTooltipElement: p5Types.Element;
   let pauseGame: boolean = false;
-  let colors = generateRandomColors(colorThreshold);
   const cellSize = isTouchDevice() ? 6 * scaleFactor : 10 * scaleFactor;
 
   let [columns, rows] = [
     Math.ceil((dimensions.width * scaleFactor) / cellSize),
     Math.ceil((dimensions.height * scaleFactor) / cellSize),
   ];
-  let generation = new Generation(columns, rows, colors.foreground);
+
+  useEffect(() => {
+    colors = generateRandomColors(colorThreshold);
+    generation = new Generation(columns, rows, colors.foreground);
+  }, []);
 
   const cell = (p5: p5Types, currentCell: Cell): void => {
     const { id, positionX, positionY, numOfNeighbours, color } = currentCell;
@@ -58,7 +71,7 @@ const Canvas = ({
 
     const cellColor = p5.color(color);
 
-    if (mouseOverCell(p5, x + canvasScrollX, y + canvasScrollY)) {
+    if (mouseOverCell(p5, x + canvasScrollX, y + canvasScrollY) && false) {
       cellColor.setAlpha(255 * Math.abs(p5.sin(p5.millis() / 200) / 2));
       p5.fill(cellColor);
       if (showBenchmark)
@@ -87,29 +100,27 @@ const Canvas = ({
     numOfNeighbours: number,
   ): void => {
     const tooltipOffset = 25;
-    cellTooltipElement.show();
-    cellTooltipElement.html(
-      `Cell Id #${id} <br /> Neighbours ${numOfNeighbours}`,
-    );
+    cellTooltipElement.hidden = false;
+    cellTooltipElement.innerHTML = `Cell Id #${id} <br /> Neighbours ${numOfNeighbours}`;
 
-    // Constraint the tooltip to the screen
-    if (p5.winMouseX >= 80 && p5.winMouseY >= 80)
-      cellTooltipElement.position(x - tooltipOffset * 2, y - tooltipOffset * 2);
-    else if (p5.winMouseX < 80 && p5.winMouseY >= 80)
-      cellTooltipElement.position(
-        x - tooltipOffset * -1,
-        y - tooltipOffset * 2,
-      );
-    else if (p5.winMouseX >= 80 && p5.winMouseY < 80)
-      cellTooltipElement.position(
-        x - tooltipOffset * 2,
-        y - tooltipOffset * -1,
-      );
-    else
-      cellTooltipElement.position(
-        x - tooltipOffset * -1,
-        y - tooltipOffset * -1,
-      );
+    // // Constraint the tooltip to the screen
+    // if (p5.winMouseX >= 80 && p5.winMouseY >= 80)
+    //   cellTooltipElement.position(x - tooltipOffset * 2, y - tooltipOffset * 2);
+    // else if (p5.winMouseX < 80 && p5.winMouseY >= 80)
+    //   cellTooltipElement.position(
+    //     x - tooltipOffset * -1,
+    //     y - tooltipOffset * 2,
+    //   );
+    // else if (p5.winMouseX >= 80 && p5.winMouseY < 80)
+    //   cellTooltipElement.position(
+    //     x - tooltipOffset * 2,
+    //     y - tooltipOffset * -1,
+    //   );
+    // else
+    //   cellTooltipElement.position(
+    //     x - tooltipOffset * -1,
+    //     y - tooltipOffset * -1,
+    //   );
   };
 
   const benchmark = (p5: p5Types): void => {
@@ -117,9 +128,9 @@ const Canvas = ({
     const currentTime = Math.ceil(p5.millis() / 1000);
     const cellsLeftInGeneration = generation.numOfLivingCells;
 
-    counterElement.html(`${currentFrameRates} Fps`);
-    timeElement.html(`${currentTime} Seconds`);
-    livingCellsCounterElement.html(`${cellsLeftInGeneration} Cells Left`);
+    counterElement.textContent = `${currentFrameRates} Fps`;
+    timeElement.textContent = `${currentTime} Seconds`;
+    livingCellsCounterElement.textContent = `${cellsLeftInGeneration} Cells Left`;
   };
 
   const setup = (p5: p5Types, canvasParentRef: Element): void => {
@@ -138,24 +149,8 @@ const Canvas = ({
     });
 
     if (showBenchmark) {
-      counterElement = p5.createSpan();
-      timeElement = p5.createSpan();
-      cellsCounterElement = p5.createSpan();
-      livingCellsCounterElement = p5.createSpan();
-      initialCellsCounterElement = p5.createSpan();
-      cellTooltipElement = p5.createSpan();
-
-      counterElement.addClass('counter');
-      timeElement.addClass('time');
-      cellsCounterElement.addClass('cells');
-      livingCellsCounterElement.addClass('living-cells');
-      initialCellsCounterElement.addClass('intial-living-cells');
-      cellTooltipElement.addClass('tooltip');
-
-      initialCellsCounterElement.html(
-        `${generation.numOfInitialCells} Initial Cells`,
-      );
-      cellsCounterElement.html(`${columns * rows} Total Cells`);
+      initialCellsCounterElement.textContent = `${generation.numOfInitialCells} Initial Cells`;
+      cellsCounterElement.textContent = `${columns * rows} Total Cells`;
     }
   };
 
@@ -215,7 +210,7 @@ const Canvas = ({
       pauseGame = !pauseGame;
     } else if (event.target === document.getElementById('restart')) {
       generation = new Generation(columns, rows, colors.foreground);
-      cellTooltipElement.hide();
+      cellTooltipElement.hidden = true;
     }
   };
 
