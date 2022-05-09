@@ -9,18 +9,12 @@ import {
   changeFaviconColor,
 } from '../utils';
 
-const scaleFactor = isTouchDevice() ? 1 : 2;
-const cellSize = 6 * scaleFactor;
-const frameRates = 30;
-
 let dimensions = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
-let [columns, rows] = [
-  Math.ceil((dimensions.width * scaleFactor) / cellSize),
-  Math.ceil((dimensions.height * scaleFactor) / cellSize),
-];
+
+const frameRates = 30;
 let [canvasScrollX, canvasScrollY] = [0, 0];
 let canvas: p5Types.Renderer;
 
@@ -30,6 +24,7 @@ interface CanvasProps {
   showBenchmark: boolean;
   enableRandomColorGeneration: boolean;
   colorThreshold: number;
+  scaleFactor: number;
 }
 
 const Canvas = ({
@@ -38,6 +33,7 @@ const Canvas = ({
   showBenchmark,
   enableRandomColorGeneration,
   colorThreshold,
+  scaleFactor,
 }: CanvasProps) => {
   let counterElement: p5Types.Element;
   let timeElement: p5Types.Element;
@@ -47,6 +43,13 @@ const Canvas = ({
   let cellTooltipElement: p5Types.Element;
   let pauseGame: boolean = false;
   let colors = generateRandomColors(colorThreshold);
+
+  const cellSize = isTouchDevice() ? 6 * scaleFactor : 12 * scaleFactor;
+
+  let [columns, rows] = [
+    Math.ceil((dimensions.width * scaleFactor) / cellSize),
+    Math.ceil((dimensions.height * scaleFactor) / cellSize),
+  ];
   let generation = new Generation(columns, rows, colors.foreground);
 
   const cell = (p5: p5Types, currentCell: Cell): void => {

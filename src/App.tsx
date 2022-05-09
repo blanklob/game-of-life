@@ -16,6 +16,7 @@ export default function App() {
           showBenchmark
           enableRandomColorGeneration
           colorThreshold={100}
+          scaleFactor={1}
         />
       </main>
       <Footer />
