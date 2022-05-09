@@ -44,7 +44,7 @@ const Canvas = ({
   let pauseGame: boolean = false;
   let colors = generateRandomColors(colorThreshold);
 
-  const cellSize = isTouchDevice() ? 6 * scaleFactor : 12 * scaleFactor;
+  const cellSize = isTouchDevice() ? 6 * scaleFactor : 10 * scaleFactor;
 
   let [columns, rows] = [
     Math.ceil((dimensions.width * scaleFactor) / cellSize),
