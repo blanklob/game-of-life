@@ -22,7 +22,7 @@ export default function App() {
         <Canvas
           showCells
           showGridLines={showGridLines}
-          showBenchmark={showBenchmark}
+          showBenchmark={false}
           enableRandomColorGeneration={enableRandomColorGeneration}
           colorThreshold={colorThreshold}
           scaleFactor={scaleFactor}

@@ -22,13 +22,13 @@ const useStore = create<GameDashboardState>((set) => ({
       ...state,
       showGridLines,
     })),
-  showBenchmark: false,
+  showBenchmark: true,
   setShowBenchmark: (showBenchmark) =>
     set((state) => ({
       ...state,
       showBenchmark,
     })),
-  enableRandomColorGeneration: false,
+  enableRandomColorGeneration: true,
   setEnableRandomColorGeneration: (enableRandomColorGeneration) =>
     set((state) => ({
       ...state,

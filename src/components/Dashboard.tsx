@@ -63,7 +63,6 @@ export default function Dashboard() {
         <li>
           <label>Cell scale</label>
           <Slider
-            defaultValue={1}
             min={0.5}
             max={3}
             label={(value) => value}
@@ -72,12 +71,13 @@ export default function Dashboard() {
             color="gray"
             size="lg"
             radius="xs"
+            defaultValue={scaleFactor}
+            onChange={setScaleFactor}
           />
         </li>
         <li>
           <label>Color Treshold</label>
           <Slider
-            defaultValue={100}
             min={20}
             max={200}
             label={(value) => value}
@@ -86,6 +86,8 @@ export default function Dashboard() {
             color="gray"
             size="lg"
             radius="xs"
+            defaultValue={colorThreshold}
+            onChange={setColorThreshold}
           />
         </li>
         <li>
@@ -99,7 +101,7 @@ export default function Dashboard() {
           />
         </li>
         <li>
-          <label>Enable Colors</label>
+          <label>Enable Random Colors</label>
           <Switch
             size="xs"
             radius="xs"
