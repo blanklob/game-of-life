@@ -9,31 +9,32 @@ import {
   changeFaviconColor,
 } from '../utils';
 
-const scaleFactor = isTouchDevice() ? 1 : 4;
-const cellSize = 10 * scaleFactor;
-const colorThreshold = 100;
-const frameRates = 30;
-
-const enableScale = true;
-const showGridLines = false;
-const showCells = true;
-const showBenchmark = true;
-const enableRandomColorGeneration = true;
-
 let dimensions = {
   width: window.innerWidth,
   height: window.innerHeight,
 };
-let [columns, rows] = [
-  Math.ceil((dimensions.width * scaleFactor) / cellSize),
-  Math.ceil((dimensions.height * scaleFactor) / cellSize),
-];
+
+const frameRates = 30;
 let [canvasScrollX, canvasScrollY] = [0, 0];
 let canvas: p5Types.Renderer;
-let colors = generateRandomColors(colorThreshold);
-let generation = new Generation(columns, rows, colors.foreground);
 
-const Canvas: React.FC = () => {
+interface CanvasProps {
+  showGridLines: boolean;
+  showCells: boolean;
+  showBenchmark: boolean;
+  enableRandomColorGeneration: boolean;
+  colorThreshold: number;
+  scaleFactor: number;
+}
+
+const Canvas = ({
+  showGridLines,
+  showCells,
+  showBenchmark,
+  enableRandomColorGeneration,
+  colorThreshold,
+  scaleFactor,
+}: CanvasProps) => {
   let counterElement: p5Types.Element;
   let timeElement: p5Types.Element;
   let cellsCounterElement: p5Types.Element;
@@ -41,6 +42,15 @@ const Canvas: React.FC = () => {
   let initialCellsCounterElement: p5Types.Element;
   let cellTooltipElement: p5Types.Element;
   let pauseGame: boolean = false;
+  let colors = generateRandomColors(colorThreshold);
+
+  const cellSize = isTouchDevice() ? 6 * scaleFactor : 10 * scaleFactor;
+
+  let [columns, rows] = [
+    Math.ceil((dimensions.width * scaleFactor) / cellSize),
+    Math.ceil((dimensions.height * scaleFactor) / cellSize),
+  ];
+  let generation = new Generation(columns, rows, colors.foreground);
 
   const cell = (p5: p5Types, currentCell: Cell): void => {
     const { id, positionX, positionY, numOfNeighbours, color } = currentCell;
