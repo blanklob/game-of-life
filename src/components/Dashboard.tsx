@@ -11,10 +11,10 @@ export default function Dashboard() {
   const { ref, width, height } = useElementSize();
   const touchDevice = isTouchDevice();
 
-  let [dashboardWidth, dashboardHeight] = [300, 350];
+  let [dashboardWidth, dashboardHeight] = [300, 490];
 
   if (touchDevice)
-    [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 350];
+    [dashboardWidth, dashboardHeight] = [window.innerWidth * 0.9, 490];
 
   const variants = {
     opened: { width: dashboardWidth, height: dashboardHeight },
@@ -63,20 +63,38 @@ export default function Dashboard() {
           />
         </li>
         <li>
-          <label>Show Stuff</label>
-          <div className="swicthes">
-            <Switch
-              size="xs"
-              radius="xs"
-              color="gray"
-              checked={checked}
-              onChange={(event) => setChecked(event.currentTarget.checked)}
-            />
-            <Switch size="xs" radius="xs" color="gray" />
-            <Switch size="xs" radius="xs" color="gray" />
-          </div>
+          <label>Color Treshold</label>
+          <Slider
+            defaultValue={100}
+            min={20}
+            max={200}
+            label={(value) => value}
+            step={20}
+            styles={{ markLabel: { display: 'none' } }}
+            color="gray"
+            size="lg"
+            radius="xs"
+          />
         </li>
         <li>
+          <label>Show Benchmark tools</label>
+          <Switch
+            size="xs"
+            radius="xs"
+            color="gray"
+            checked={checked}
+            onChange={(event) => setChecked(event.currentTarget.checked)}
+          />
+        </li>
+        <li>
+          <label>Enable Colors</label>
+          <Switch checked={checked} size="xs" radius="xs" color="gray" />
+        </li>
+        <li>
+          <label>Show Grid Lines</label>
+          <Switch size="xs" radius="xs" color="gray" />
+        </li>
+        <li className="buttons">
           <button role="button" id="pause">
             Pause
           </button>
